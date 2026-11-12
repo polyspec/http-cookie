@@ -15,6 +15,10 @@
   대신 호출자가 적는 optional field이며 속성이 없으면 `null`이다(CK-1.3, CK-6.3).
 - `MAX_NAME_AND_VALUE`와 `MAX_PATH`는 인터페이스 계약의 `uint` 타입인 `u64`이고, 계약의 Composer 패키지는 polyspec
   패키지 이름의 한 형식인 `polyspec/http-cookies`다.
+- bindgen이 `packages/rust/interface.json`에서 생성하는 PHP, Python, Node 바인딩을 더했다(CK-1.5). `bindgen
+  scaffold`가 쓰는 추적하는 얇은 패키지 `packages/php-ext`, `packages/python`, `packages/ts`와, 그 `generated/` 소스를
+  쓰는 `make bindings`다. `make test-bindings`는 언어마다 패키지를 빌드·설치하고 bindgen이 생성한 시험과 contract
+  case를 실행한다(CK-14.5). `make check`는 `bindgen check`를 실행한다.
 - 레포는 루트의 Cargo workspace 하나이며 코어와 바인딩 crate를 담는다. `Cargo.lock`과 lint는 루트로 옮겼다. 코어는
   `polyspec-bindgen-core`(bindgen 릴리스 전까지 Git 의존)에 의존하고 `Error`가 `bindgen_core::Kinds`를 구현한다.
 - Windows는 지원하지 않는다.

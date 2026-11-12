@@ -11,9 +11,11 @@ Rules for every change of http-cookies. The rules of the library are in [docs/sp
   it (`include` of `packages/rust/Cargo.toml`), so that a repository that depends on the crate reads it through Cargo.
 - `packages/python/`, `packages/ts/`, `packages/php-ext/`: the bindings for Python, Node and PHP. Each is a thin package
   that `bindgen scaffold` writes and that is tracked: `Cargo.toml`, `src/lib.rs`, which includes `generated/lib.rs`,
-  and the manifest of the language (`pyproject.toml`, `package.json`, `composer.json`). They are not edited by hand.
-  `generated/` of each is written by bindgen and is not tracked.
+  and the manifest of the language (`pyproject.toml`, `package.json`, `composer.json`). They are not edited by hand;
+  `make bindgen-check` fails when they differ from what bindgen writes. `generated/` of each is written by `make
+  bindings` and is not tracked. `tests/` of each holds the runner of the contract cases in that language (CK-14.5).
 - `contracts/cookies.json`: the cases of the rules (CK-14).
+- `scripts/bindgen.mts`: runs bindgen (see "Bindings").
 - `docs/spec/`: the specification. Root: `AGENTS.md`, `README.md`, `CHANGELOG.md` and their Korean translations
   (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`.
 - There is no implementation in another language to remove or to keep beside the bindings.
@@ -23,6 +25,16 @@ Rules for every change of http-cookies. The rules of the library are in [docs/sp
 - `polyspec-bindgen-core` is a Git dependency of the core and of the binding crates (branch `v1/rust-core` of the
   bindgen repository) until bindgen is released; `Cargo.lock` pins its commit. The core implements
   `bindgen_core::Kinds` for its error (CK-13.2, CK-13.3).
+- bindgen itself is the TypeScript tool of the same repository, which no registry holds yet. `scripts/bindgen.mts`
+  takes it from the checkout that Cargo made of the commit that `Cargo.lock` pins, copies it into
+  `var/bindgen/<commit>` and installs its dependencies there by its `package-lock.json`, so that the generator and
+  `bindgen_core` are one version. This is not the usual installation of a tool; it ends when bindgen is released.
+- `make bindings` generates; every make target that builds or tests a binding runs it first. `make test-bindings` runs
+  clippy on the whole workspace, then `make test-python` (a wheel built by maturin and installed into `var/venv`),
+  `make test-node` (the addon beside the generated entry, the package packed and installed into `var/node`) and `make
+  test-php` (the extension built against `PHP_CONFIG` and loaded into `PHP`, the tests on `PHPUNIT`). Each runs the
+  tests that bindgen generates and the contract cases. The variables `PYTHON` (3.14 or later), `PHP` (8.4 or later),
+  `PHP_CONFIG` and `PHPUNIT` name the runtimes; `CARGOFLAGS` adds arguments to every cargo build.
 
 ## Changes
 
@@ -41,9 +53,9 @@ Rules for every change of http-cookies. The rules of the library are in [docs/sp
 ## Rust
 
 - The toolchain is the release that `rust-toolchain.toml` pins. `make check` runs clippy with `-D warnings`, rustfmt
-  and the tests.
-- The lints of the workspace (`Cargo.toml` at the root) deny every warning, unsafe code, `unwrap`, `expect`, `as` conversions,
-  `let _` of a value that must be used or of an untyped value, and an allow attribute without a reason.
+  and the tests of the core, and `bindgen check` (the contract and the tracked binding packages).
+- The lints of the workspace (`Cargo.toml` at the root) deny every warning, unsafe code, `unwrap`, `expect`, `as`
+  conversions, `let _` of a value that must be used or of an untyped value, and an allow attribute without a reason.
   `clippy.toml` disallows `Option::{unwrap_or, unwrap_or_default, unwrap_or_else, map_or, map_or_else}` and
   `Result::{ok, map_or, map_or_else}`. A use that a rule needs carries `#[allow(..., reason = "<rule id>")]`.
 - The crate does no I/O and reads no clock, environment or random source (CK-1.2).

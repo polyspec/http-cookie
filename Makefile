@@ -1,15 +1,74 @@
 CARGO := cargo
-RUST := packages/rust
+# Extra arguments of every cargo build, for example --ignore-rust-version on a machine without the pinned release.
+CARGOFLAGS ?=
+CORE := polyspec-http-cookies
+BINDGEN := node scripts/bindgen.mts
+CASES := $(CURDIR)/contracts/cookies.json
+VAR := $(CURDIR)/var
+export CARGO_TARGET_DIR ?= $(CURDIR)/target
+# The language runtimes. PHP is the binary whose headers the extension is built against (PHP_CONFIG) and that loads it.
+PYTHON ?= python3.14
+PHP ?= php
+PHP_CONFIG ?= php-config
+PHPUNIT ?= vendor/bin/phpunit
+MATURIN := maturin==1.16.0
+# ext-php-rs reads them when it builds the extension.
+export PHP PHP_CONFIG
 
-.PHONY: check test lint-rust fmt-check
+.PHONY: check test lint-rust fmt-check bindgen-check bindings test-bindings lint-bindings test-python test-node test-php
 
-check: lint-rust fmt-check test
+# The core and the contract; none of them needs the generator (bindgen design L-2).
+check: lint-rust fmt-check test bindgen-check
 
 test:
-	$(CARGO) test --manifest-path $(RUST)/Cargo.toml --locked
+	$(CARGO) test $(CARGOFLAGS) -p $(CORE) --locked
 
 lint-rust:
-	$(CARGO) clippy --manifest-path $(RUST)/Cargo.toml --locked --all-targets -- -D warnings
+	$(CARGO) clippy $(CARGOFLAGS) -p $(CORE) --locked --all-targets -- -D warnings
 
 fmt-check:
-	$(CARGO) fmt --manifest-path $(RUST)/Cargo.toml --check
+	$(CARGO) fmt -p $(CORE) --check
+
+# The contract check and the comparison of the tracked binding packages with what bindgen writes (L-2 (c)).
+bindgen-check:
+	$(BINDGEN) check packages/rust/interface.json
+
+# Writes the generated sources into packages/{php-ext,python,ts}/generated, which are not tracked (G-6, L-1).
+bindings:
+	$(BINDGEN) generate --root .
+
+test-bindings: lint-bindings test-python test-node test-php
+
+lint-bindings: bindings
+	$(CARGO) clippy $(CARGOFLAGS) --workspace --locked --all-targets --features panic-test -- -D warnings
+
+# The wheel, installed into a virtual environment; the generated tests (G-5) and the contract cases (CK-14.5).
+test-python: bindings
+	$(PYTHON) -m venv --clear $(VAR)/venv
+	$(VAR)/venv/bin/pip install -q $(MATURIN)
+	rm -rf $(VAR)/wheels
+	cd packages/python && $(VAR)/venv/bin/maturin build --locked --features panic-test --out $(VAR)/wheels $(CARGOFLAGS)
+	$(VAR)/venv/bin/pip install -q --force-reinstall $(VAR)/wheels/*.whl
+	cd $(VAR) && venv/bin/python -m unittest discover -s $(CURDIR)/packages/python/generated/tests -t $(CURDIR)/packages/python/generated/tests
+	cd $(VAR) && HTTP_COOKIES_CASES=$(CASES) venv/bin/python -m unittest discover -s $(CURDIR)/packages/python/tests -t $(CURDIR)/packages/python/tests
+
+# The addon beside the generated entry, the package packed and installed into var/node; the generated tests and the
+# contract cases run there against the installed package.
+NODE_ADDON := http-cookies.$(shell node -p 'process.platform + "-" + process.arch + (process.platform === "linux" ? "-gnu" : "")').node
+test-node: bindings
+	$(CARGO) build $(CARGOFLAGS) -p $(CORE)-node --locked --features panic-test
+	cp $(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookies_node.so packages/ts/generated/$(NODE_ADDON)
+	rm -rf $(VAR)/node && mkdir -p $(VAR)/node
+	cd packages/ts && npm pack --pack-destination $(VAR)/node
+	echo '{ "private": true }' > $(VAR)/node/package.json
+	cd $(VAR)/node && npm install --no-audit --no-fund ./*.tgz
+	cp packages/ts/generated/tests/generated.test.mjs packages/ts/tests/cases.test.mjs $(VAR)/node/
+	cd $(VAR)/node && HTTP_COOKIES_CASES=$(CASES) node --test generated.test.mjs cases.test.mjs
+
+# The extension built against PHP_CONFIG and loaded into PHP; the stub is linted, then the generated tests and the
+# contract cases run on PHPUnit.
+test-php: bindings
+	$(CARGO) build $(CARGOFLAGS) -p $(CORE)-php-ext --locked --features panic-test
+	$(PHP) -l packages/php-ext/generated/polyspec_http_cookies.stub.php
+	$(PHP) -d extension=$(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookies.so $(PHPUNIT) packages/php-ext/generated/tests
+	HTTP_COOKIES_CASES=$(CASES) $(PHP) -d extension=$(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookies.so $(PHPUNIT) packages/php-ext/tests

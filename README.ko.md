@@ -26,13 +26,22 @@ let attributes = Attributes { path: "/".into(), max_age: Some(60), secure: true,
 assert_eq!(set_cookie("__Host-id", "v", &attributes)?, b"__Host-id=v; Max-Age=60; Path=/; Secure; HttpOnly; SameSite=Lax");
 ```
 
-PHP, Python, Node 바인딩은 crate 패키지에 들어가는 초안 인터페이스 계약
-[packages/rust/interface.json](packages/rust/interface.json)에서 생성할 예정이며, 아직 바인딩은 없다.
+## PHP, Python, Node
+
+바인딩은 bindgen이 인터페이스 계약 [packages/rust/interface.json](packages/rust/interface.json)에서 생성한다(CK-1.5):
+Composer 패키지 `polyspec/http-cookies`(PHP 확장 `polyspec_http_cookies`, PHP 8.4 이상), PyPI 패키지
+`polyspec-http-cookies`(모듈 `polyspec.http_cookies`, Python 3.14 이상), npm 패키지 `@polyspec/http-cookies`. 언어마다
+`parseCookie`/`parse_cookie`, 속성을 이름 있는 인자(PHP)·키워드 인자(Python)·options 객체(Node)로 받는
+`setCookie`/`set_cookie`, enum `SameSite`, `kind`와 `status`를 가진 오류 클래스 `Cookies<Category>Error`가 있다. 아직
+릴리스는 없다.
 
 ## 검사
 
 ```
-make check   # clippy -D warnings, rustfmt --check, 시험
+make check           # 코어: clippy -D warnings, rustfmt --check, 시험; bindgen check
+make bindings        # 바인딩을 packages/*/generated에 생성
+make test-bindings   # workspace clippy, 그다음 언어마다 바인딩을 빌드·설치·시험
 ```
 
-요구 사항: `rust-toolchain.toml`의 Rust 릴리스. Windows는 아직 지원하지 않는다.
+요구 사항: `rust-toolchain.toml`의 Rust 릴리스와 bindgen을 돌릴 Node. 바인딩에는 Python 3.14, PHP 8.4와 그
+`php-config`, PHPUnit(`PYTHON`, `PHP`, `PHP_CONFIG`, `PHPUNIT`). Windows는 아직 지원하지 않는다.

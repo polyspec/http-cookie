@@ -2,3 +2,4 @@
 /target/
 /var/
 /packages/*/generated/
+__pycache__/

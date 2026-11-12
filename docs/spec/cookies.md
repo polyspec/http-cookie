@@ -146,3 +146,8 @@ other cookie. The code names the rule at the place where it leaves the bytes.
   <a id="CK-14.4"></a> A property test checks for random input that reading a list of lines equals reading them joined
   with `; ` (CK-2.3), that reading never panics (CK-5.4), and that reading a written cookie gives its name and value
   (CK-8.3).
+  <a id="CK-14.5"></a> Each binding runs every case through its package as it is installed (the Python wheel in a
+  virtual environment, the npm package packed and installed, the PHP extension loaded into PHP) on the runner of its
+  language (unittest, `node --test`, PHPUnit): a result equals the case's, and a failure has the class of its category
+  in that language, the kind, the status and, when the case states one, the message. The tests that bindgen generates
+  for the binding run beside them.
