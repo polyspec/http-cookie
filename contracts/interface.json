@@ -1,0 +1,348 @@
+{
+  "schema": "polyspec/interface@1",
+  "library": "http-cookies",
+  "core": {
+    "crate": "polyspec-http-cookies",
+    "path": "packages/rust"
+  },
+  "targets": [
+    "php",
+    "python",
+    "node"
+  ],
+  "packages": {
+    "php": {
+      "composer": "polyspec/http-cookies-php-ext",
+      "namespace": "Polyspec\\HttpCookies",
+      "extension": "polyspec_http_cookies"
+    },
+    "python": {
+      "pypi": "polyspec-http-cookies",
+      "module": "polyspec.http_cookies",
+      "native": "polyspec.http_cookies._native"
+    },
+    "node": {
+      "npm": "@polyspec/http-cookies",
+      "addon": "http-cookies.<target>.node",
+      "entries": {
+        ".": {
+          "formats": [
+            "import",
+            "require"
+          ]
+        }
+      }
+    },
+    "rust": {
+      "crate": "polyspec-http-cookies"
+    }
+  },
+  "naming": {
+    "exceptions": []
+  },
+  "types": {},
+  "errors": {
+    "kinds": [
+      {
+        "variant": "polyspec_http_cookies::Error::InvalidName",
+        "category": "value"
+      },
+      {
+        "variant": "polyspec_http_cookies::Error::InvalidCookiePath",
+        "category": "value"
+      },
+      {
+        "variant": "polyspec_http_cookies::Error::TooLarge",
+        "category": "value"
+      },
+      {
+        "variant": "polyspec_http_cookies::Error::PrefixNotMet",
+        "category": "value"
+      },
+      {
+        "variant": "polyspec_http_cookies::Error::SameSiteNoneNotSecure",
+        "category": "value"
+      }
+    ],
+    "categories": {
+      "value": {
+        "name": [
+          "value",
+          "error"
+        ],
+        "php": "\\InvalidArgumentException",
+        "python": "ValueError",
+        "node": "RangeError"
+      },
+      "type": {
+        "name": [
+          "type",
+          "error"
+        ],
+        "php": "\\TypeError",
+        "python": "TypeError",
+        "node": "TypeError"
+      },
+      "io": {
+        "name": [
+          "io",
+          "error"
+        ],
+        "php": "\\RuntimeException",
+        "python": "OSError",
+        "node": "Error"
+      },
+      "store": {
+        "name": [
+          "store",
+          "error"
+        ],
+        "php": "\\RuntimeException",
+        "python": "RuntimeError",
+        "node": "Error"
+      },
+      "busy": {
+        "name": [
+          "busy",
+          "error"
+        ],
+        "php": "\\LogicException",
+        "python": "RuntimeError",
+        "node": "Error"
+      },
+      "internal": {
+        "name": [
+          "internal",
+          "error"
+        ],
+        "php": "\\Error",
+        "python": "RuntimeError",
+        "node": "Error"
+      }
+    },
+    "fixed": [
+      {
+        "category": "type",
+        "php": [
+          "\\ArgumentCountError",
+          "\\Error"
+        ],
+        "python": [
+          "TypeError"
+        ],
+        "node": [
+          "TypeError"
+        ],
+        "fixed": true
+      }
+    ]
+  },
+  "units": [
+    {
+      "id": "cookies",
+      "name": [
+        "cookies"
+      ],
+      "module": "",
+      "kind": "functions",
+      "visibility": "public",
+      "origin": "generated",
+      "members": [
+        {
+          "id": "parse_cookie",
+          "name": [
+            "parse",
+            "cookie"
+          ],
+          "kind": "function",
+          "visibility": "public",
+          "parameters": [
+            {
+              "name": [
+                "lines"
+              ],
+              "type": "list<latin1>",
+              "required": true
+            }
+          ],
+          "returns": "list<tuple<text, text>>",
+          "raises": [],
+          "wait": "none",
+          "core": {
+            "path": "polyspec_http_cookies::parse_cookie"
+          }
+        },
+        {
+          "id": "set_cookie",
+          "name": [
+            "set",
+            "cookie"
+          ],
+          "kind": "function",
+          "visibility": "public",
+          "parameters": [
+            {
+              "name": [
+                "name"
+              ],
+              "type": "text",
+              "required": true
+            },
+            {
+              "name": [
+                "value"
+              ],
+              "type": "text",
+              "required": true
+            },
+            {
+              "name": [
+                "attributes"
+              ],
+              "type": "attributes",
+              "required": true
+            }
+          ],
+          "returns": "latin1",
+          "raises": [
+            "polyspec_http_cookies::Error::InvalidName",
+            "polyspec_http_cookies::Error::InvalidCookiePath",
+            "polyspec_http_cookies::Error::TooLarge",
+            "polyspec_http_cookies::Error::PrefixNotMet",
+            "polyspec_http_cookies::Error::SameSiteNoneNotSecure"
+          ],
+          "wait": "none",
+          "core": {
+            "path": "polyspec_http_cookies::set_cookie"
+          }
+        },
+        {
+          "id": "max_name_and_value",
+          "name": [
+            "max",
+            "name",
+            "and",
+            "value"
+          ],
+          "kind": "constant",
+          "visibility": "public",
+          "type": "uint",
+          "value": 4096,
+          "core": "polyspec_http_cookies::MAX_NAME_AND_VALUE"
+        },
+        {
+          "id": "max_path",
+          "name": [
+            "max",
+            "path"
+          ],
+          "kind": "constant",
+          "visibility": "public",
+          "type": "uint",
+          "value": 1024,
+          "core": "polyspec_http_cookies::MAX_PATH"
+        }
+      ]
+    },
+    {
+      "id": "attributes",
+      "name": [
+        "attributes"
+      ],
+      "module": "",
+      "kind": "record",
+      "visibility": "public",
+      "origin": "generated",
+      "core_type": "polyspec_http_cookies::Attributes",
+      "fields": [
+        {
+          "name": [
+            "path"
+          ],
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": [
+            "max",
+            "age"
+          ],
+          "type": "uint",
+          "default": {
+            "computed": "CK-6.3"
+          }
+        },
+        {
+          "name": [
+            "secure"
+          ],
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": [
+            "http",
+            "only"
+          ],
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": [
+            "same",
+            "site"
+          ],
+          "type": "same_site",
+          "default": {
+            "computed": "CK-6.3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "same_site",
+      "name": [
+        "same",
+        "site"
+      ],
+      "module": "",
+      "kind": "enum",
+      "visibility": "public",
+      "origin": "generated",
+      "core_type": "polyspec_http_cookies::SameSite",
+      "variants": [
+        {
+          "name": [
+            "strict"
+          ],
+          "value": "Strict"
+        },
+        {
+          "name": [
+            "lax"
+          ],
+          "value": "Lax"
+        },
+        {
+          "name": [
+            "none"
+          ],
+          "value": "None"
+        }
+      ]
+    }
+  ],
+  "changes": [],
+  "cases": [
+    {
+      "member": "parse_cookie",
+      "file": "contracts/cookies.json",
+      "group": "parse"
+    },
+    {
+      "member": "set_cookie",
+      "file": "contracts/cookies.json",
+      "group": "set_cookie"
+    }
+  ]
+}
