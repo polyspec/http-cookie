@@ -5,7 +5,7 @@ version = "0.0.0"
 edition = "2021"
 rust-version = "1.99.0"
 publish = false
-build = "generated/build.rs"
+build = "build.rs"
 
 [lib]
 name = "polyspec_http_cookies_node"

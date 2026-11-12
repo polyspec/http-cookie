@@ -11,8 +11,9 @@ Rules for every change of http-cookies. The rules of the library are in [docs/sp
   it (`include` of `packages/rust/Cargo.toml`), so that a repository that depends on the crate reads it through Cargo.
 - `packages/python/`, `packages/ts/`, `packages/php-ext/`: the bindings for Python, Node and PHP. Each is a thin package
   that `bindgen scaffold` writes and that is tracked: `Cargo.toml`, `src/lib.rs`, which includes `generated/lib.rs`,
-  and the manifest of the language (`pyproject.toml`, `package.json`, `composer.json`). They are not edited by hand;
-  `make bindgen-check` fails when they differ from what bindgen writes. `generated/` of each is written by `make
+  the `build.rs` of the Node addon, and the manifest of the language (`pyproject.toml`, `package.json`,
+  `composer.json`). They are not edited by hand; `make bindgen-check` fails when they differ from what bindgen
+  writes. `generated/` of each is written by `make
   bindings` and is not tracked. `tests/` of each holds the runner of the contract cases in that language (CK-14.5).
 - `contracts/cookies.json`: the cases of the rules (CK-14).
 - `scripts/bindgen.mts`: runs bindgen (see "Bindings").
@@ -59,8 +60,9 @@ Rules for every change of http-cookies. The rules of the library are in [docs/sp
 
 ## Rust
 
-- The toolchain is the release that `rust-toolchain.toml` pins. `make check` runs clippy with `-D warnings`, rustfmt
-  and the tests of the core, and `bindgen check` (the contract and the tracked binding packages).
+- The toolchain is the release that `rust-toolchain.toml` pins. `make check` runs clippy with `-D warnings` and the
+  tests of the core, rustfmt on the whole workspace (which needs no generated file), and `bindgen check` (the
+  contract and the tracked binding packages).
 - The lints of the workspace (`Cargo.toml` at the root) deny every warning, unsafe code, `unwrap`, `expect`, `as`
   conversions, `let _` of a value that must be used or of an untyped value, and an allow attribute without a reason.
   `clippy.toml` disallows `Option::{unwrap_or, unwrap_or_default, unwrap_or_else, map_or, map_or_else}` and

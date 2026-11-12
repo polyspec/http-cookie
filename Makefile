@@ -28,7 +28,7 @@ lint-rust:
 	$(CARGO) clippy $(CARGOFLAGS) -p $(CORE) --locked --all-targets -- -D warnings
 
 fmt-check:
-	$(CARGO) fmt -p $(CORE) --check
+	$(CARGO) fmt --all --check
 
 # The contract check and the comparison of the tracked binding packages with what bindgen writes (L-2 (c)).
 bindgen-check:
