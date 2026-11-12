@@ -1,4 +1,4 @@
-# http-cookies
+# http-cookie
 
 [English](README.md)
 
@@ -17,7 +17,7 @@
 ## Rust
 
 ```rust
-use polyspec_http_cookies::{parse_cookie, set_cookie, Attributes, SameSite};
+use polyspec_http_cookie::{parse_cookie, set_cookie, Attributes, SameSite};
 
 let cookies = parse_cookie(&[b"a=1; b=%C3%A9".to_vec()]);
 assert_eq!(cookies, vec![("a".into(), "1".into()), ("b".into(), "é".into())]);
@@ -29,10 +29,10 @@ assert_eq!(set_cookie("__Host-id", "v", &attributes)?, b"__Host-id=v; Max-Age=60
 ## PHP, Python, Node
 
 바인딩은 bindgen이 인터페이스 계약 [packages/rust/interface.json](packages/rust/interface.json)에서 생성한다(CK-1.5):
-Composer 패키지 `polyspec/http-cookies`(PHP 확장 `polyspec_http_cookies`, PHP 8.4 이상), PyPI 패키지
-`polyspec-http-cookies`(모듈 `polyspec.http_cookies`, Python 3.14 이상), npm 패키지 `@polyspec/http-cookies`. 언어마다
+Composer 패키지 `polyspec/http-cookie`(PHP 확장 `polyspec_http_cookie`, PHP 8.4 이상), PyPI 패키지
+`polyspec-http-cookie`(모듈 `polyspec.http_cookie`, Python 3.14 이상), npm 패키지 `@polyspec/http-cookie`. 언어마다
 `parseCookie`/`parse_cookie`, 속성을 이름 있는 인자(PHP)·키워드 인자(Python)·options 객체(Node)로 받는
-`setCookie`/`set_cookie`, enum `SameSite`, `kind`와 `status`를 가진 오류 클래스 `Cookies<Category>Error`가 있다. 아직
+`setCookie`/`set_cookie`, enum `SameSite`, `kind`와 `status`를 가진 오류 클래스 `HttpCookie<Category>Error`가 있다. 아직
 릴리스는 없다.
 
 ## 검사

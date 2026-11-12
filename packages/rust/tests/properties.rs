@@ -1,6 +1,6 @@
 //! Properties for random input (CK-14.4).
 
-use polyspec_http_cookies::{parse_cookie, set_cookie, Attributes, Error, SameSite};
+use polyspec_http_cookie::{parse_cookie, set_cookie, Attributes, Error, SameSite};
 use proptest::prelude::*;
 
 /// Bytes that the grammar gives a meaning, more often than their share of random bytes.

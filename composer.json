@@ -1,5 +1,5 @@
 {
-    "name": "polyspec/http-cookies-development",
+    "name": "polyspec/http-cookie-development",
     "description": "The development tools of the repository: PHPUnit, which runs the tests of the PHP extension",
     "type": "project",
     "license": "MIT",

@@ -1,12 +1,12 @@
 {
-  "name": "polyspec/http-cookies",
-  "description": "The http-cookies library of polyspec as a PHP extension",
+  "name": "polyspec/http-cookie",
+  "description": "The http-cookie library of polyspec as a PHP extension",
   "type": "php-ext",
   "license": "MIT",
   "require": {
     "php": ">=8.4"
   },
   "php-ext": {
-    "extension-name": "polyspec_http_cookies"
+    "extension-name": "polyspec_http_cookie"
   }
 }

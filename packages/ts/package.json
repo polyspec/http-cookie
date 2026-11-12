@@ -1,7 +1,7 @@
 {
-  "name": "@polyspec/http-cookies",
+  "name": "@polyspec/http-cookie",
   "version": "0.0.0",
-  "description": "The http-cookies library of polyspec for Node",
+  "description": "The http-cookie library of polyspec for Node",
   "license": "MIT",
   "main": "./generated/index.cjs",
   "types": "./generated/index.d.ts",

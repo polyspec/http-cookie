@@ -1,12 +1,12 @@
 # AGENTS.md
 
-Rules for every change of http-cookies. The rules of the library are in [docs/spec/cookies.md](docs/spec/cookies.md).
+Rules for every change of http-cookie. The rules of the library are in [docs/spec/cookies.md](docs/spec/cookies.md).
 
 ## Layout
 
 - One Cargo workspace at the root (`Cargo.toml`, `Cargo.lock`) with the core and the three binding crates; the lints
   are those of the root `Cargo.toml` and `clippy.toml`.
-- `packages/rust/`: the crate `polyspec-http-cookies`, which holds every rule (CK-1.4). It builds and tests without the
+- `packages/rust/`: the crate `polyspec-http-cookie`, which holds every rule (CK-1.4). It builds and tests without the
   generator. `packages/rust/interface.json`: the interface contract of the bindings (CK-1.5). The crate package holds
   it (`include` of `packages/rust/Cargo.toml`), so that a repository that depends on the crate reads it through Cargo.
 - `packages/python/`, `packages/ts/`, `packages/php-ext/`: the bindings for Python, Node and PHP. Each is a thin package

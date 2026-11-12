@@ -1,7 +1,7 @@
 CARGO := cargo
 # Extra arguments of every cargo build, for example --ignore-rust-version on a machine without the pinned release.
 CARGOFLAGS ?=
-CORE := polyspec-http-cookies
+CORE := polyspec-http-cookie
 BINDGEN := node scripts/bindgen.mts
 CASES := $(CURDIR)/contracts/cookies.json
 VAR := $(CURDIR)/var
@@ -58,25 +58,25 @@ test-python: bindings
 	cd packages/python && $(VAR)/venv/bin/maturin build --locked --features panic-test --out $(VAR)/wheels $(CARGOFLAGS)
 	$(VAR)/venv/bin/pip install -q --force-reinstall $(VAR)/wheels/*.whl
 	cd $(VAR) && venv/bin/python -m unittest discover -s $(CURDIR)/packages/python/generated/tests -t $(CURDIR)/packages/python/generated/tests
-	cd $(VAR) && HTTP_COOKIES_CASES=$(CASES) venv/bin/python -m unittest discover -s $(CURDIR)/packages/python/tests -t $(CURDIR)/packages/python/tests
+	cd $(VAR) && HTTP_COOKIE_CASES=$(CASES) venv/bin/python -m unittest discover -s $(CURDIR)/packages/python/tests -t $(CURDIR)/packages/python/tests
 
 # The addon beside the generated entry, the package packed and installed into var/node; the generated tests and the
 # contract cases run there against the installed package.
-NODE_ADDON := http-cookies.$(shell node -p 'process.platform + "-" + process.arch + (process.platform === "linux" ? "-gnu" : "")').node
+NODE_ADDON := http-cookie.$(shell node -p 'process.platform + "-" + process.arch + (process.platform === "linux" ? "-gnu" : "")').node
 test-node: bindings
 	$(CARGO) build $(CARGOFLAGS) -p $(CORE)-node --locked --features panic-test
-	cp $(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookies_node.so packages/ts/generated/$(NODE_ADDON)
+	cp $(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookie_node.so packages/ts/generated/$(NODE_ADDON)
 	rm -rf $(VAR)/node && mkdir -p $(VAR)/node
 	cd packages/ts && npm pack --pack-destination $(VAR)/node
 	echo '{ "private": true }' > $(VAR)/node/package.json
 	cd $(VAR)/node && npm install --no-audit --no-fund ./*.tgz
 	cp packages/ts/generated/tests/generated.test.mjs packages/ts/tests/cases.test.mjs $(VAR)/node/
-	cd $(VAR)/node && HTTP_COOKIES_CASES=$(CASES) node --test generated.test.mjs cases.test.mjs
+	cd $(VAR)/node && HTTP_COOKIE_CASES=$(CASES) node --test generated.test.mjs cases.test.mjs
 
 # The extension built against PHP_CONFIG and loaded into PHP; the stub is linted, then the generated tests and the
 # contract cases run on PHPUnit.
 test-php: bindings
 	$(CARGO) build $(CARGOFLAGS) -p $(CORE)-php-ext --locked --features panic-test
-	$(PHP) -l packages/php-ext/generated/polyspec_http_cookies.stub.php
-	$(PHP) -d extension=$(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookies.so $(PHPUNIT) packages/php-ext/generated/tests
-	HTTP_COOKIES_CASES=$(CASES) $(PHP) -d extension=$(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookies.so $(PHPUNIT) packages/php-ext/tests
+	$(PHP) -l packages/php-ext/generated/polyspec_http_cookie.stub.php
+	$(PHP) -d extension=$(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookie.so $(PHPUNIT) packages/php-ext/generated/tests
+	HTTP_COOKIE_CASES=$(CASES) $(PHP) -d extension=$(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookie.so $(PHPUNIT) packages/php-ext/tests

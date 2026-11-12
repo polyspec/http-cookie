@@ -1,11 +1,11 @@
-// The contract cases of http-cookies run against the installed Node package (CK-14.5).
-// HTTP_COOKIES_CASES is the path of contracts/cookies.json; make test-node sets it.
+// The contract cases of http-cookie run against the installed Node package (CK-14.5).
+// HTTP_COOKIE_CASES is the path of contracts/cookies.json; make test-node sets it.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import * as cookies from '@polyspec/http-cookies';
+import * as cookies from '@polyspec/http-cookie';
 
-const cases = JSON.parse(readFileSync(process.env.HTTP_COOKIES_CASES, 'utf8'));
+const cases = JSON.parse(readFileSync(process.env.HTTP_COOKIE_CASES, 'utf8'));
 
 test('parse', () => {
   assert.ok(cases.parse.length > 0);
@@ -23,7 +23,7 @@ test('set_cookie', () => {
     if (kase.raises !== undefined) {
       const category = kase.raises.category[0].toUpperCase() + kase.raises.category.slice(1);
       assert.throws(call, (error) =>
-        error.constructor === cookies[`Cookies${category}Error`] &&
+        error.constructor === cookies[`HttpCookie${category}Error`] &&
         error.kind === kase.raises.kind &&
         error.status === kase.raises.status &&
         (kase.raises.message === null || error.message === kase.raises.message), kase.id);

@@ -2,7 +2,7 @@
 //! `parse` case read with its lines joined with `; ` and with a line split at each `;` (CK-2.3), and a `set_cookie`
 //! case read back (CK-8.3).
 
-use polyspec_http_cookies::{parse_cookie, set_cookie, Attributes, SameSite};
+use polyspec_http_cookie::{parse_cookie, set_cookie, Attributes, SameSite};
 use serde_json::Value;
 
 const CONTRACT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../contracts/cookies.json"));

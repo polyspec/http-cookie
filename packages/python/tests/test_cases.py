@@ -1,15 +1,15 @@
-"""The contract cases of http-cookies run against the installed Python package (CK-14.5).
+"""The contract cases of http-cookie run against the installed Python package (CK-14.5).
 
-HTTP_COOKIES_CASES is the path of contracts/cookies.json; make test-python sets it.
+HTTP_COOKIE_CASES is the path of contracts/cookies.json; make test-python sets it.
 """
 
 import json
 import os
 import unittest
 
-import polyspec.http_cookies as cookies
+import polyspec.http_cookie as cookies
 
-CASES = os.environ["HTTP_COOKIES_CASES"]
+CASES = os.environ["HTTP_COOKIE_CASES"]
 
 
 def load() -> dict:
@@ -50,7 +50,7 @@ class ContractCaseTest(unittest.TestCase):
                     self.assertEqual(error.kind, raises["kind"])
                     self.assertEqual(error.status, raises["status"])
                     category = raises["category"].capitalize()
-                    self.assertIs(type(error), getattr(cookies, f"Cookies{category}Error"))
+                    self.assertIs(type(error), getattr(cookies, f"HttpCookie{category}Error"))
                     if raises["message"] is not None:
                         self.assertEqual(str(error), raises["message"])
                 else:

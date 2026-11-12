@@ -1087,7 +1087,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "polyspec-http-cookies"
+name = "polyspec-http-cookie"
 version = "0.0.0"
 dependencies = [
  "polyspec-bindgen-core",
@@ -1096,31 +1096,31 @@ dependencies = [
 ]
 
 [[package]]
-name = "polyspec-http-cookies-node"
+name = "polyspec-http-cookie-node"
 version = "0.0.0"
 dependencies = [
  "napi",
  "napi-build",
  "napi-derive",
  "polyspec-bindgen-core",
- "polyspec-http-cookies",
+ "polyspec-http-cookie",
 ]
 
 [[package]]
-name = "polyspec-http-cookies-php-ext"
+name = "polyspec-http-cookie-php-ext"
 version = "0.0.0"
 dependencies = [
  "ext-php-rs",
  "polyspec-bindgen-core",
- "polyspec-http-cookies",
+ "polyspec-http-cookie",
 ]
 
 [[package]]
-name = "polyspec-http-cookies-python"
+name = "polyspec-http-cookie-python"
 version = "0.0.0"
 dependencies = [
  "polyspec-bindgen-core",
- "polyspec-http-cookies",
+ "polyspec-http-cookie",
  "pyo3",
 ]
 

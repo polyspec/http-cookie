@@ -1,26 +1,6 @@
-# 변경 기록
 
-[English](CHANGELOG.md)
-
-## Unreleased
-
-- 명세 `docs/spec/cookies.md`(CK-1~CK-14), case `contracts/cookies.json`, Rust crate `polyspec-http-cookies`를
-  더했다. `parse_cookie`는 요청의 `Cookie` 필드 줄을 순서 있는 이름·값 쌍으로 읽고, `set_cookie`는 `Set-Cookie` 한
-  형식을 쓰며 오류 kind는 `invalid_name`, `invalid_cookie_path`, `too_large`, `prefix_not_met`,
-  `same_site_none_not_secure`다.
-- 인터페이스 계약 `contracts/interface.json`을 더했다.
-- 인터페이스 계약을 `packages/rust/interface.json`으로 옮기고 crate의 `include`에 넣었다. crate에 의존하는 레포가
-  Cargo가 해석한 패키지에서 계약을 읽게 하기 위해서다. 계약은 bindgen 스키마를 따른다: category 오류 클래스는 모든
-  언어에서 `Cookies<Category>Error`(`CookiesValueError` 등)이고, 속성 `max_age`와 `same_site`는 기본값을 가진 field
-  대신 호출자가 적는 optional field이며 속성이 없으면 `null`이다(CK-1.3, CK-6.3).
-- `MAX_NAME_AND_VALUE`와 `MAX_PATH`는 인터페이스 계약의 `uint` 타입인 `u64`이고, 계약의 Composer 패키지는 polyspec
-  패키지 이름의 한 형식인 `polyspec/http-cookies`다.
-- bindgen이 `packages/rust/interface.json`에서 생성하는 PHP, Python, Node 바인딩을 더했다(CK-1.5). `bindgen
-  scaffold`가 쓰는 추적하는 얇은 패키지 `packages/php-ext`, `packages/python`, `packages/ts`와, 그 `generated/` 소스를
-  쓰는 `make bindings`다. `make test-bindings`는 언어마다 패키지를 빌드·설치하고 bindgen이 생성한 시험과 contract
-  case를 실행한다(CK-14.5). `make check`는 `bindgen check`를 실행하고, `make check-declarations`는 생성된 `index.d.ts`를
-  `tsc --noEmit --strict`로 검사한다. TypeScript(`package.json`, `package-lock.json`)와 PHPUnit(`composer.json`)은
-  레포의 개발 의존이다.
-- 레포는 루트의 Cargo workspace 하나이며 코어와 바인딩 crate를 담는다. `Cargo.lock`과 lint는 루트로 옮겼다. 코어는
-  `polyspec-bindgen-core`(bindgen 릴리스 전까지 Git 의존)에 의존하고 `Error`가 `bindgen_core::Kinds`를 구현한다.
-- Windows는 지원하지 않는다.
+- 레포 이름은 http-cookie다: 레포 이름은 다루는 대상의 단수 명사이고 HTTP 메시지의 한 부분을 다루면 `http-` 접두어를
+  붙인다(계획 N-1, N-2). 모든 이름이 그것을 따른다(설계 P-1, E-2): crate `polyspec-http-cookie`, Composer 패키지
+  `polyspec/http-cookie`(네임스페이스 `Polyspec\HttpCookie`, 확장 `polyspec_http_cookie`), PyPI 패키지
+  `polyspec-http-cookie`(모듈 `polyspec.http_cookie`), npm 패키지 `@polyspec/http-cookie`, 오류 클래스
+  `HttpCookie<Category>Error`. 계약은 이 변경을 `changes`에 적는다.

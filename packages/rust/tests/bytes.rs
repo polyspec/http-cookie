@@ -1,6 +1,6 @@
 //! Every byte value in each place of the grammar, and the boundaries of a string (CK-14.3).
 
-use polyspec_http_cookies::{parse_cookie, set_cookie, Attributes, Error, SameSite, MAX_NAME_AND_VALUE, MAX_PATH};
+use polyspec_http_cookie::{parse_cookie, set_cookie, Attributes, Error, SameSite, MAX_NAME_AND_VALUE, MAX_PATH};
 
 fn plain(path: &str) -> Attributes {
     Attributes { path: path.to_owned(), max_age: None, secure: false, http_only: false, same_site: None }

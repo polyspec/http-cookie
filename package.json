@@ -1,5 +1,5 @@
 {
-  "name": "http-cookies-development",
+  "name": "http-cookie-development",
   "private": true,
   "description": "The development tools of the repository: the TypeScript compiler that checks the generated declarations of the Node binding",
   "license": "MIT",
