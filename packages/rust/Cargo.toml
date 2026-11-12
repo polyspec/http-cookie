@@ -15,30 +15,12 @@ name = "polyspec_http_cookies"
 path = "src/lib.rs"
 
 [dependencies]
+polyspec-bindgen-core = { git = "https://github.com/polyspec/bindgen.git", branch = "v1/rust-core" }
 
 [dev-dependencies]
 proptest = "1.12.0"
 serde_json = "1.0.154"
 
-# The crate is its own workspace. Every warning fails, no unsafe code, no unwrap or expect, no discarded result, and
-# every allow attribute names its rule; clippy.toml of the repository root disallows the methods that turn an Err or a
-# None into a value.
+# The lints are those of the workspace at the repository root.
 [lints]
 workspace = true
-
-[workspace]
-
-[workspace.lints.rust]
-warnings = "deny"
-unsafe_code = "forbid"
-unused_must_use = "deny"
-
-[workspace.lints.clippy]
-all = { level = "deny", priority = -1 }
-allow_attributes_without_reason = "deny"
-unwrap_used = "deny"
-expect_used = "deny"
-let_underscore_must_use = "deny"
-let_underscore_untyped = "deny"
-map_err_ignore = "deny"
-as_conversions = "deny"

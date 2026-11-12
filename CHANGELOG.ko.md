@@ -8,11 +8,13 @@
   더했다. `parse_cookie`는 요청의 `Cookie` 필드 줄을 순서 있는 이름·값 쌍으로 읽고, `set_cookie`는 `Set-Cookie` 한
   형식을 쓰며 오류 kind는 `invalid_name`, `invalid_cookie_path`, `too_large`, `prefix_not_met`,
   `same_site_none_not_secure`다.
-- 초안 인터페이스 계약 `contracts/interface.json`을 더했다. 아직 바인딩은 생성하지 않는다.
+- 인터페이스 계약 `contracts/interface.json`을 더했다.
 - 인터페이스 계약을 `packages/rust/interface.json`으로 옮기고 crate의 `include`에 넣었다. crate에 의존하는 레포가
   Cargo가 해석한 패키지에서 계약을 읽게 하기 위해서다. 계약은 bindgen 스키마를 따른다: category 오류 클래스는 모든
   언어에서 `Cookies<Category>Error`(`CookiesValueError` 등)이고, 속성 `max_age`와 `same_site`는 기본값을 가진 field
   대신 호출자가 적는 optional field이며 속성이 없으면 `null`이다(CK-1.3, CK-6.3).
 - `MAX_NAME_AND_VALUE`와 `MAX_PATH`는 인터페이스 계약의 `uint` 타입인 `u64`이고, 계약의 Composer 패키지는 polyspec
   패키지 이름의 한 형식인 `polyspec/http-cookies`다.
+- 레포는 루트의 Cargo workspace 하나이며 코어와 바인딩 crate를 담는다. `Cargo.lock`과 lint는 루트로 옮겼다. 코어는
+  `polyspec-bindgen-core`(bindgen 릴리스 전까지 Git 의존)에 의존하고 `Error`가 `bindgen_core::Kinds`를 구현한다.
 - Windows는 지원하지 않는다.

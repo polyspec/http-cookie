@@ -1,3 +1,4 @@
 /packages/rust/target/
 /target/
 /var/
+/packages/*/generated/

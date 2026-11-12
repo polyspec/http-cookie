@@ -60,3 +60,19 @@ impl fmt::Display for Error {
 }
 
 impl std::error::Error for Error {}
+
+/// The kind, status and errno that a binding gives the error of its language (CK-13.2, CK-13.3; bindgen design F-2).
+impl bindgen_core::Kinds for Error {
+    fn kind(&self) -> &'static str {
+        Error::kind(self)
+    }
+
+    fn status(&self) -> Option<u16> {
+        Error::status(self)
+    }
+
+    /// None: no failure of the library is an I/O failure (CK-1.2).
+    fn errno(&self) -> Option<i32> {
+        None
+    }
+}

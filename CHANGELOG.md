@@ -8,7 +8,7 @@
   `polyspec-http-cookies` with `parse_cookie` (the `Cookie` field lines of a request read into ordered name and value
   pairs) and `set_cookie` (one `Set-Cookie` form, with the error kinds `invalid_name`, `invalid_cookie_path`,
   `too_large`, `prefix_not_met` and `same_site_none_not_secure`).
-- Added the draft interface contract `contracts/interface.json`. No binding is generated yet.
+- Added the interface contract `contracts/interface.json`.
 - Moved the interface contract to `packages/rust/interface.json` and added it to the `include` of the crate, so that a
   repository that depends on the crate reads the contract from the package that Cargo resolved. The contract follows
   the schema of bindgen: the category error classes are `Cookies<Category>Error` in every language
@@ -16,4 +16,7 @@
   states, `null` for an absent attribute (CK-1.3, CK-6.3), instead of fields with a default.
 - `MAX_NAME_AND_VALUE` and `MAX_PATH` are `u64`, the type of `uint` in the interface contract, and the Composer package
   of the contract is `polyspec/http-cookies`, the one form of the package names of polyspec.
+- The repository is one Cargo workspace at the root with the core and the binding crates; `Cargo.lock` and the lints
+  moved to the root. The core depends on `polyspec-bindgen-core` (a Git dependency until bindgen is released) and its
+  `Error` implements `bindgen_core::Kinds`.
 - Windows is not supported.
