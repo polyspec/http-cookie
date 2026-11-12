@@ -2,7 +2,7 @@ CARGO := cargo
 # Extra arguments of every cargo build, for example --ignore-rust-version on a machine without the pinned release.
 CARGOFLAGS ?=
 CORE := polyspec-http-cookie
-BINDGEN := node scripts/bindgen.mts
+BINDING := node scripts/binding.mts
 CASES := $(CURDIR)/contracts/cookies.json
 VAR := $(CURDIR)/var
 export CARGO_TARGET_DIR ?= $(CURDIR)/target
@@ -15,11 +15,11 @@ MATURIN := maturin==1.16.0
 # ext-php-rs reads them when it builds the extension.
 export PHP PHP_CONFIG
 
-.PHONY: check test lint-rust fmt-check bindgen-check bindings test-bindings lint-bindings test-python test-node test-php \
+.PHONY: check test lint-rust fmt-check binding-check bindings test-bindings lint-bindings test-python test-node test-php \
 	check-declarations
 
-# The core and the contract; none of them needs the generator (bindgen design L-2).
-check: lint-rust fmt-check test bindgen-check
+# The core and the contract; none of them needs the generator (binding design L-2).
+check: lint-rust fmt-check test binding-check
 
 test:
 	$(CARGO) test $(CARGOFLAGS) -p $(CORE) --locked
@@ -30,13 +30,13 @@ lint-rust:
 fmt-check:
 	$(CARGO) fmt --all --check
 
-# The contract check and the comparison of the tracked binding packages with what bindgen writes (L-2 (c)).
-bindgen-check:
-	$(BINDGEN) check packages/rust/interface.json
+# The contract check and the comparison of the tracked binding packages with what binding writes (L-2 (c)).
+binding-check:
+	$(BINDING) check packages/rust/interface.json
 
 # Writes the generated sources into packages/{php-ext,python,ts}/generated, which are not tracked (G-6, L-1).
 bindings:
-	$(BINDGEN) generate --root .
+	$(BINDING) generate --root .
 
 test-bindings: lint-bindings check-declarations test-python test-node test-php
 

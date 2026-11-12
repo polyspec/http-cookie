@@ -10,13 +10,13 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
   generator. `packages/rust/interface.json`: the interface contract of the bindings (CK-1.5). The crate package holds
   it (`include` of `packages/rust/Cargo.toml`), so that a repository that depends on the crate reads it through Cargo.
 - `packages/python/`, `packages/ts/`, `packages/php-ext/`: the bindings for Python, Node and PHP. Each is a thin package
-  that `bindgen scaffold` writes and that is tracked: `Cargo.toml`, `src/lib.rs`, which includes `generated/lib.rs`,
+  that `binding scaffold` writes and that is tracked: `Cargo.toml`, `src/lib.rs`, which includes `generated/lib.rs`,
   the `build.rs` of the Node addon, and the manifest of the language (`pyproject.toml`, `package.json`,
-  `composer.json`). They are not edited by hand; `make bindgen-check` fails when they differ from what bindgen
+  `composer.json`). They are not edited by hand; `make binding-check` fails when they differ from what binding
   writes. `generated/` of each is written by `make
   bindings` and is not tracked. `tests/` of each holds the runner of the contract cases in that language (CK-14.5).
 - `contracts/cookies.json`: the cases of the rules (CK-14).
-- `scripts/bindgen.mts`: runs bindgen (see "Bindings").
+- `scripts/binding.mts`: runs binding (see "Bindings").
 - `docs/spec/`: the specification. Root: `AGENTS.md`, `README.md`, `CHANGELOG.md` and their Korean translations
   (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`, and `package.json`,
   `package-lock.json` and `composer.json` of the development tools.
@@ -24,20 +24,20 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
 
 ## Bindings
 
-- `polyspec-bindgen-core` is a Git dependency of the core and of the binding crates (branch `v1/rust-core` of the
-  bindgen repository) until bindgen is released; `Cargo.lock` pins its commit. The core implements
-  `bindgen_core::Kinds` for its error (CK-13.2, CK-13.3).
-- bindgen itself is the TypeScript tool of the same repository, which no registry holds yet. `scripts/bindgen.mts`
+- `polyspec-binding-core` is a Git dependency of the core and of the binding crates (branch `v1/rust-core` of the
+  binding repository) until binding is released; `Cargo.lock` pins its commit. The core implements
+  `binding_core::Kinds` for its error (CK-13.2, CK-13.3).
+- binding itself is the TypeScript tool of the same repository, which no registry holds yet. `scripts/binding.mts`
   takes it from the checkout that Cargo made of the commit that `Cargo.lock` pins, copies it into
-  `var/bindgen/<commit>` and installs its dependencies there by its `package-lock.json`, so that the generator and
-  `bindgen_core` are one version. This is not the usual installation of a tool and holds only until the first release
-  of bindgen: after it, bindgen is an npm package that `package-lock.json` pins, and the script goes.
+  `var/binding/<commit>` and installs its dependencies there by its `package-lock.json`, so that the generator and
+  `binding_core` are one version. This is not the usual installation of a tool and holds only until the first release
+  of binding: after it, binding is an npm package that `package-lock.json` pins, and the script goes.
 - `make bindings` generates; every make target that builds or tests a binding runs it first. `make test-bindings` runs
   clippy on the whole workspace, `make check-declarations` (`tsc --noEmit --strict` on the generated `index.d.ts`),
   then `make test-python` (a wheel built by maturin and installed into `var/venv`),
   `make test-node` (the addon beside the generated entry, the package packed and installed into `var/node`) and `make
   test-php` (the extension built against `PHP_CONFIG` and loaded into `PHP`, the tests on `PHPUNIT`). Each runs the
-  tests that bindgen generates and the contract cases. The variables `PYTHON` (3.14 or later), `PHP` (8.4 or later),
+  tests that binding generates and the contract cases. The variables `PYTHON` (3.14 or later), `PHP` (8.4 or later),
   `PHP_CONFIG` and `PHPUNIT` name the runtimes; `CARGOFLAGS` adds arguments to every cargo build.
 - The development tools are dependencies of the repository: TypeScript in `package.json`, pinned by
   `package-lock.json`, and PHPUnit in `require-dev` of `composer.json`, installed into `vendor/` (the default of
@@ -61,7 +61,7 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
 ## Rust
 
 - The toolchain is the release that `rust-toolchain.toml` pins. `make check` runs clippy with `-D warnings` and the
-  tests of the core, rustfmt on the whole workspace (which needs no generated file), and `bindgen check` (the
+  tests of the core, rustfmt on the whole workspace (which needs no generated file), and `binding check` (the
   contract and the tracked binding packages).
 - The lints of the workspace (`Cargo.toml` at the root) deny every warning, unsafe code, `unwrap`, `expect`, `as`
   conversions, `let _` of a value that must be used or of an untyped value, and an allow attribute without a reason.

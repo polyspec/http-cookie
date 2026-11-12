@@ -1078,9 +1078,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f6b464fbc74e149a392436b17d523f769e057cb6877f6a5c4618bc6f11800548"
 
 [[package]]
-name = "polyspec-bindgen-core"
+name = "polyspec-binding-core"
 version = "0.0.1"
-source = "git+https://github.com/polyspec/bindgen.git?branch=v1%2Frust-core#3b49afd0b72dbafe917bced9adaae41f89fb48e6"
+source = "git+https://github.com/polyspec/binding.git?branch=v1%2Frust-core#7cda8c03d825725366fd9957151711f5bac47eb7"
 dependencies = [
  "indexmap",
  "tokio-util",
@@ -1090,7 +1090,7 @@ dependencies = [
 name = "polyspec-http-cookie"
 version = "0.0.0"
 dependencies = [
- "polyspec-bindgen-core",
+ "polyspec-binding-core",
  "proptest",
  "serde_json",
 ]
@@ -1102,7 +1102,7 @@ dependencies = [
  "napi",
  "napi-build",
  "napi-derive",
- "polyspec-bindgen-core",
+ "polyspec-binding-core",
  "polyspec-http-cookie",
 ]
 
@@ -1111,7 +1111,7 @@ name = "polyspec-http-cookie-php-ext"
 version = "0.0.0"
 dependencies = [
  "ext-php-rs",
- "polyspec-bindgen-core",
+ "polyspec-binding-core",
  "polyspec-http-cookie",
 ]
 
@@ -1119,7 +1119,7 @@ dependencies = [
 name = "polyspec-http-cookie-python"
 version = "0.0.0"
 dependencies = [
- "polyspec-bindgen-core",
+ "polyspec-binding-core",
  "polyspec-http-cookie",
  "pyo3",
 ]

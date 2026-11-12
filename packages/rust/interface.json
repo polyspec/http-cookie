@@ -39,32 +39,32 @@
     "classes": {
       "value": {
         "php": "Polyspec\\HttpCookie\\HttpCookieValueError",
-        "python": "HttpCookieValueError",
+        "python": "HTTPCookieValueError",
         "node": "HttpCookieValueError"
       },
       "type": {
         "php": "Polyspec\\HttpCookie\\HttpCookieTypeError",
-        "python": "HttpCookieTypeError",
+        "python": "HTTPCookieTypeError",
         "node": "HttpCookieTypeError"
       },
       "io": {
         "php": "Polyspec\\HttpCookie\\HttpCookieIoError",
-        "python": "HttpCookieIoError",
+        "python": "HTTPCookieIoError",
         "node": "HttpCookieIoError"
       },
       "store": {
         "php": "Polyspec\\HttpCookie\\HttpCookieStoreError",
-        "python": "HttpCookieStoreError",
+        "python": "HTTPCookieStoreError",
         "node": "HttpCookieStoreError"
       },
       "busy": {
         "php": "Polyspec\\HttpCookie\\HttpCookieBusyError",
-        "python": "HttpCookieBusyError",
+        "python": "HTTPCookieBusyError",
         "node": "HttpCookieBusyError"
       },
       "internal": {
         "php": "Polyspec\\HttpCookie\\HttpCookieInternalError",
-        "python": "HttpCookieInternalError",
+        "python": "HTTPCookieInternalError",
         "node": "HttpCookieInternalError"
       }
     },
@@ -325,7 +325,7 @@
     {
       "id": "change-names",
       "rule": "N-1",
-      "reason": "plan N-1, N-2: a repository is named after the one thing it handles, in the singular, and a library of one part of an HTTP message has the prefix http-, so the repository is http-cookie; design P-1 and E-2 give its package, module and error class names: Composer polyspec/http-cookie, PHP Polyspec\\HttpCookie, PyPI polyspec-http-cookie, Python polyspec.http_cookie, npm @polyspec/http-cookie, PHP extension polyspec_http_cookie, HttpCookie<Category>Error",
+      "reason": "plan N-1, N-2: a repository is named after the one thing it handles, in the singular, and a library of one part of an HTTP message has the prefix http-, so the repository is http-cookie; design P-1 and E-2 give its package, module and error class names: Composer polyspec/http-cookie, PHP Polyspec\\HttpCookie, PyPI polyspec-http-cookie, Python polyspec.http_cookie, npm @polyspec/http-cookie, PHP extension polyspec_http_cookie, the error classes HttpCookie<Category>Error in PHP and Node and HTTPCookie<Category>Error in Python (N-2: an acronym word is one capital word in PHP and Node and all capitals in Python)",
       "symbol": "polyspec/http-cookies, Polyspec\\HttpCookies, polyspec-http-cookies, polyspec.http_cookies, @polyspec/http-cookies",
       "from": {
         "php": "Composer polyspec/http-cookies, namespace Polyspec\\HttpCookies, extension polyspec_http_cookies, Cookies<Category>Error",

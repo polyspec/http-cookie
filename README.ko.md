@@ -28,7 +28,7 @@ assert_eq!(set_cookie("__Host-id", "v", &attributes)?, b"__Host-id=v; Max-Age=60
 
 ## PHP, Python, Node
 
-바인딩은 bindgen이 인터페이스 계약 [packages/rust/interface.json](packages/rust/interface.json)에서 생성한다(CK-1.5):
+바인딩은 binding이 인터페이스 계약 [packages/rust/interface.json](packages/rust/interface.json)에서 생성한다(CK-1.5):
 Composer 패키지 `polyspec/http-cookie`(PHP 확장 `polyspec_http_cookie`, PHP 8.4 이상), PyPI 패키지
 `polyspec-http-cookie`(모듈 `polyspec.http_cookie`, Python 3.14 이상), npm 패키지 `@polyspec/http-cookie`. 언어마다
 `parseCookie`/`parse_cookie`, 속성을 이름 있는 인자(PHP)·키워드 인자(Python)·options 객체(Node)로 받는
@@ -38,11 +38,11 @@ Composer 패키지 `polyspec/http-cookie`(PHP 확장 `polyspec_http_cookie`, PHP
 ## 검사
 
 ```
-make check           # 코어: clippy -D warnings, rustfmt --check, 시험; bindgen check
+make check           # 코어: clippy -D warnings, rustfmt --check, 시험; binding check
 make bindings        # 바인딩을 packages/*/generated에 생성
 make test-bindings   # workspace clippy, 선언의 tsc, 그다음 언어마다 바인딩을 빌드·설치·시험
 ```
 
-요구 사항: `rust-toolchain.toml`의 Rust 릴리스와 bindgen을 돌릴 Node. 바인딩에는 Python 3.14, PHP 8.4와 그
+요구 사항: `rust-toolchain.toml`의 Rust 릴리스와 binding을 돌릴 Node. 바인딩에는 Python 3.14, PHP 8.4와 그
 `php-config`, `composer install`이 `vendor/`에 설치하는 PHPUnit(`PYTHON`, `PHP`, `PHP_CONFIG`, `PHPUNIT`). Windows는
 아직 지원하지 않는다.

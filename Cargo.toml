@@ -1,12 +1,12 @@
-# One workspace: the core crate and the binding crates, which bindgen scaffold writes (bindgen design L-2). One
-# Cargo.lock at the root pins every dependency of all of them, the commit of polyspec-bindgen-core included.
+# One workspace: the core crate and the binding crates, which binding scaffold writes (binding design L-2). One
+# Cargo.lock at the root pins every dependency of all of them, the commit of polyspec-binding-core included.
 [workspace]
 resolver = "2"
 members = ["packages/rust", "packages/python", "packages/ts", "packages/php-ext"]
 
 # Every warning fails, no unsafe code, no unwrap or expect, no discarded result, and every allow attribute names its
 # rule; clippy.toml disallows the methods that turn an Err or a None into a value. The binding crates carry the same
-# lints themselves, with unsafe_code deny instead of forbid (bindgen GN-4).
+# lints themselves, with unsafe_code deny instead of forbid (binding GN-4).
 [workspace.lints.rust]
 warnings = "deny"
 unsafe_code = "forbid"

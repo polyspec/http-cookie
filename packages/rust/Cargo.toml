@@ -7,7 +7,7 @@ description = "The Cookie field of a request read into an ordered map, and one f
 repository = "https://github.com/polyspec/http-cookie.git"
 publish = false
 # The package holds the interface contract of the bindings beside the source, so that a repository that depends on
-# this crate reads the contract from the package that Cargo resolved (bindgen design I-1, T-3).
+# this crate reads the contract from the package that Cargo resolved (binding design I-1, T-3).
 include = ["/src/**/*.rs", "/interface.json"]
 
 [lib]
@@ -15,7 +15,7 @@ name = "polyspec_http_cookie"
 path = "src/lib.rs"
 
 [dependencies]
-polyspec-bindgen-core = { git = "https://github.com/polyspec/bindgen.git", branch = "v1/rust-core" }
+polyspec-binding-core = { git = "https://github.com/polyspec/binding.git", branch = "v1/rust-core" }
 
 [dev-dependencies]
 proptest = "1.12.0"
