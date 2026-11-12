@@ -2,7 +2,7 @@
 name = "polyspec-http-cookies"
 version = "0.0.0"
 edition = "2021"
-rust-version = "1.97.0"
+rust-version = "1.99.0"
 description = "The Cookie field of a request read into an ordered map, and one form of the Set-Cookie field"
 repository = "https://github.com/polyspec/http-cookies.git"
 publish = false
