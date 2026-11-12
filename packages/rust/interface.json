@@ -12,7 +12,7 @@
   ],
   "packages": {
     "php": {
-      "package": "polyspec/http-cookies-php-ext",
+      "package": "polyspec/http-cookies",
       "namespace": "Polyspec\\HttpCookies"
     },
     "python": {

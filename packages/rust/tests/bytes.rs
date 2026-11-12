@@ -161,10 +161,22 @@ fn every_byte_of_a_set_cookie_path() {
     }
 }
 
+/// The limits as lengths: `MAX_PATH` and `MAX_NAME_AND_VALUE` are `u64`, the type of the constants of the interface
+/// contract, and the tests build strings of their length.
+const PATH: usize = 1024;
+const NAME_AND_VALUE: usize = 4096;
+
+#[test]
+fn the_limits_are_the_lengths_of_the_tests() {
+    // CK-10.1, CK-11.3: the limits of the tests below are the constants of the crate.
+    assert_eq!(u64::try_from(PATH), Ok(MAX_PATH));
+    assert_eq!(u64::try_from(NAME_AND_VALUE), Ok(MAX_NAME_AND_VALUE));
+}
+
 #[test]
 fn the_sizes_of_a_path() {
     // CK-10.1: at most 1024 characters.
-    let longest = format!("/{}", "p".repeat(MAX_PATH - 1));
+    let longest = format!("/{}", "p".repeat(PATH - 1));
     assert!(set_cookie("a", "b", &plain(&longest)).is_ok());
     let longer = format!("{longest}p");
     assert_eq!(set_cookie("a", "b", &plain(&longer)), Err(Error::InvalidCookiePath));
@@ -174,10 +186,10 @@ fn the_sizes_of_a_path() {
 #[test]
 fn the_sizes_of_a_name_and_a_value() {
     // CK-11.3: the name and the written value count together, and a name counts as much as a value.
-    let name = "n".repeat(MAX_NAME_AND_VALUE - 1);
+    let name = "n".repeat(NAME_AND_VALUE - 1);
     assert!(set_cookie(&name, "v", &plain("/")).is_ok());
     assert_eq!(set_cookie(&name, "vv", &plain("/")), Err(Error::TooLarge));
-    let name = "n".repeat(MAX_NAME_AND_VALUE);
+    let name = "n".repeat(NAME_AND_VALUE);
     assert!(set_cookie(&name, "", &plain("/")).is_ok());
     assert_eq!(set_cookie(&format!("{name}n"), "", &plain("/")), Err(Error::TooLarge));
     // CK-11.3 and CK-8.2: an encoded byte counts as three.

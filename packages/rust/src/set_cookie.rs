@@ -1,10 +1,19 @@
 use crate::Error;
 
 /// The most bytes of a name and its written value together (CK-11.3).
-pub const MAX_NAME_AND_VALUE: usize = 4096;
+pub const MAX_NAME_AND_VALUE: u64 = 4096;
 
 /// The most characters of a path (CK-10.1).
-pub const MAX_PATH: usize = 1024;
+pub const MAX_PATH: u64 = 1024;
+
+/// Whether a length is at most a limit. The limits are `u64`, the type of the constants of the interface contract; a
+/// length that `u64` cannot hold is over every limit (CK-10.1, CK-11.3).
+fn within(length: usize, limit: u64) -> bool {
+    match u64::try_from(length) {
+        Ok(length) => length <= limit,
+        Err(_) => false,
+    }
+}
 
 /// The value of the attribute `SameSite` (CK-6.2).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -52,7 +61,7 @@ pub fn set_cookie(name: &str, value: &str, attributes: &Attributes) -> Result<Ve
         return Err(Error::InvalidCookiePath);
     }
     let written = encode_value(value);
-    if name.len() + written.len() > MAX_NAME_AND_VALUE {
+    if !within(name.len().saturating_add(written.len()), MAX_NAME_AND_VALUE) {
         return Err(Error::TooLarge);
     }
     if !meets_prefix(name, attributes) {
@@ -119,7 +128,7 @@ const fn is_tchar(byte: u8) -> bool {
 /// (CK-10.1).
 fn is_path(path: &str) -> bool {
     path.starts_with('/')
-        && path.len() <= MAX_PATH
+        && within(path.len(), MAX_PATH)
         && path.bytes().all(|byte| matches!(byte, 0x20..=0x7E) && byte != b';')
 }
 

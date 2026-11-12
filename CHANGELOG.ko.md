@@ -13,4 +13,6 @@
   Cargo가 해석한 패키지에서 계약을 읽게 하기 위해서다. 계약은 bindgen 스키마를 따른다: category 오류 클래스는 모든
   언어에서 `Cookies<Category>Error`(`CookiesValueError` 등)이고, 속성 `max_age`와 `same_site`는 기본값을 가진 field
   대신 호출자가 적는 optional field이며 속성이 없으면 `null`이다(CK-1.3, CK-6.3).
+- `MAX_NAME_AND_VALUE`와 `MAX_PATH`는 인터페이스 계약의 `uint` 타입인 `u64`이고, 계약의 Composer 패키지는 polyspec
+  패키지 이름의 한 형식인 `polyspec/http-cookies`다.
 - Windows는 지원하지 않는다.

@@ -14,4 +14,6 @@
   the schema of bindgen: the category error classes are `Cookies<Category>Error` in every language
   (`CookiesValueError` and so on), and the attributes `max_age` and `same_site` are optional fields that the caller
   states, `null` for an absent attribute (CK-1.3, CK-6.3), instead of fields with a default.
+- `MAX_NAME_AND_VALUE` and `MAX_PATH` are `u64`, the type of `uint` in the interface contract, and the Composer package
+  of the contract is `polyspec/http-cookies`, the one form of the package names of polyspec.
 - Windows is not supported.
