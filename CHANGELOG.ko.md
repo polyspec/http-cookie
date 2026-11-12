@@ -1,6 +1,4 @@
 
-- 레포는 binding 레포(bindgen의 새 이름)의 `polyspec-binding-core`(`binding_core`, `Cargo.lock`이 고정하는 Git 의존
-  `https://github.com/polyspec/binding.git`)에 의존하고 그 도구를 `scripts/binding.mts`로 실행한다(`make binding-check`).
-  바인딩 package는 `binding scaffold`가 쓰는 것이다. Python 오류 클래스는 Python의 클래스 형식으로 쓴 레포 이름인
-  `HTTPCookie<Category>Error`다(설계 N-2: 약어 낱말은 Python에서 모두 대문자, PHP와 Node에서 첫 글자만 대문자이며 두
-  언어는 `HttpCookie<Category>Error`를 유지한다).
+- `Cargo.lock`은 같은 라이브러리 묶음의 모든 레포가 고정하는 binding 9de9d03을 고정하고(CK-20), 바인딩 package는 그 scaffold가
+  쓰는 것이다. Node 패키지는 addon을 담지 않고 플랫폼 패키지마다 optional dependency를 가진다. `make test-node`는 이
+  기계의 플랫폼 패키지를 릴리스처럼 묶어 두 패키지를 함께 설치한다.
