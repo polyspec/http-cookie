@@ -5,9 +5,10 @@ Rules for every change of http-cookies. The rules of the library are in [docs/sp
 ## Layout
 
 - `packages/rust/`: the crate `polyspec-http-cookies`, which holds every rule (CK-1.4). It is its own Cargo workspace
-  with its `Cargo.lock`.
-- `contracts/cookies.json`: the cases of the rules (CK-14). `contracts/interface.json`: the interface contract of the
-  bindings, a draft until bindings are generated from it; no binding is written by hand.
+  with its `Cargo.lock`. `packages/rust/interface.json`: the interface contract of the bindings, a draft until bindings
+  are generated from it; no binding is written by hand. The crate package holds it (`include` of
+  `packages/rust/Cargo.toml`), so that a repository that depends on the crate reads it through Cargo.
+- `contracts/cookies.json`: the cases of the rules (CK-14).
 - `docs/spec/`: the specification. Root: `AGENTS.md`, `README.md`, `CHANGELOG.md` and their Korean translations
   (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`.
 

@@ -26,8 +26,9 @@ let attributes = Attributes { path: "/".into(), max_age: Some(60), secure: true,
 assert_eq!(set_cookie("__Host-id", "v", &attributes)?, b"__Host-id=v; Max-Age=60; Path=/; Secure; HttpOnly; SameSite=Lax");
 ```
 
-PHP, Python and Node bindings will be generated from [contracts/interface.json](contracts/interface.json), which is a
-draft; there is no binding yet.
+PHP, Python and Node bindings will be generated from the interface contract
+[packages/rust/interface.json](packages/rust/interface.json), which the crate package holds and which is a draft; there
+is no binding yet.
 
 ## Checks
 

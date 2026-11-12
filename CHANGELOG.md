@@ -9,4 +9,9 @@
   pairs) and `set_cookie` (one `Set-Cookie` form, with the error kinds `invalid_name`, `invalid_cookie_path`,
   `too_large`, `prefix_not_met` and `same_site_none_not_secure`).
 - Added the draft interface contract `contracts/interface.json`. No binding is generated yet.
+- Moved the interface contract to `packages/rust/interface.json` and added it to the `include` of the crate, so that a
+  repository that depends on the crate reads the contract from the package that Cargo resolved. The contract follows
+  the schema of bindgen: the category error classes are `Cookies<Category>Error` in every language
+  (`CookiesValueError` and so on), and the attributes `max_age` and `same_site` are optional fields that the caller
+  states, `null` for an absent attribute (CK-1.3, CK-6.3), instead of fields with a default.
 - Windows is not supported.

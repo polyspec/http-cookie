@@ -6,6 +6,9 @@ rust-version = "1.97.0"
 description = "The Cookie field of a request read into an ordered map, and one form of the Set-Cookie field"
 repository = "https://github.com/polyspec/http-cookies.git"
 publish = false
+# The package holds the interface contract of the bindings beside the source, so that a repository that depends on
+# this crate reads the contract from the package that Cargo resolved (bindgen design I-1, T-3).
+include = ["/src/**/*.rs", "/interface.json"]
 
 [lib]
 name = "polyspec_http_cookies"

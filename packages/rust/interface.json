@@ -12,18 +12,15 @@
   ],
   "packages": {
     "php": {
-      "composer": "polyspec/http-cookies-php-ext",
-      "namespace": "Polyspec\\HttpCookies",
-      "extension": "polyspec_http_cookies"
+      "package": "polyspec/http-cookies-php-ext",
+      "namespace": "Polyspec\\HttpCookies"
     },
     "python": {
-      "pypi": "polyspec-http-cookies",
-      "module": "polyspec.http_cookies",
-      "native": "polyspec.http_cookies._native"
+      "package": "polyspec-http-cookies",
+      "module": "polyspec.http_cookies"
     },
     "node": {
-      "npm": "@polyspec/http-cookies",
-      "addon": "http-cookies.<target>.node",
+      "package": "@polyspec/http-cookies",
       "entries": {
         ".": {
           "formats": [
@@ -32,9 +29,6 @@
           ]
         }
       }
-    },
-    "rust": {
-      "crate": "polyspec-http-cookies"
     }
   },
   "naming": {
@@ -42,6 +36,56 @@
   },
   "types": {},
   "errors": {
+    "classes": {
+      "value": {
+        "php": "Polyspec\\HttpCookies\\CookiesValueError",
+        "python": "CookiesValueError",
+        "node": "CookiesValueError"
+      },
+      "type": {
+        "php": "Polyspec\\HttpCookies\\CookiesTypeError",
+        "python": "CookiesTypeError",
+        "node": "CookiesTypeError"
+      },
+      "io": {
+        "php": "Polyspec\\HttpCookies\\CookiesIoError",
+        "python": "CookiesIoError",
+        "node": "CookiesIoError"
+      },
+      "store": {
+        "php": "Polyspec\\HttpCookies\\CookiesStoreError",
+        "python": "CookiesStoreError",
+        "node": "CookiesStoreError"
+      },
+      "busy": {
+        "php": "Polyspec\\HttpCookies\\CookiesBusyError",
+        "python": "CookiesBusyError",
+        "node": "CookiesBusyError"
+      },
+      "internal": {
+        "php": "Polyspec\\HttpCookies\\CookiesInternalError",
+        "python": "CookiesInternalError",
+        "node": "CookiesInternalError"
+      }
+    },
+    "fixed": [
+      {
+        "lang": "php",
+        "class": "ArgumentCountError"
+      },
+      {
+        "lang": "php",
+        "class": "Error"
+      },
+      {
+        "lang": "python",
+        "class": "TypeError"
+      },
+      {
+        "lang": "node",
+        "class": "TypeError"
+      }
+    ],
     "kinds": [
       {
         "variant": "polyspec_http_cookies::Error::InvalidName",
@@ -64,78 +108,8 @@
         "category": "value"
       }
     ],
-    "categories": {
-      "value": {
-        "name": [
-          "value",
-          "error"
-        ],
-        "php": "\\InvalidArgumentException",
-        "python": "ValueError",
-        "node": "RangeError"
-      },
-      "type": {
-        "name": [
-          "type",
-          "error"
-        ],
-        "php": "\\TypeError",
-        "python": "TypeError",
-        "node": "TypeError"
-      },
-      "io": {
-        "name": [
-          "io",
-          "error"
-        ],
-        "php": "\\RuntimeException",
-        "python": "OSError",
-        "node": "Error"
-      },
-      "store": {
-        "name": [
-          "store",
-          "error"
-        ],
-        "php": "\\RuntimeException",
-        "python": "RuntimeError",
-        "node": "Error"
-      },
-      "busy": {
-        "name": [
-          "busy",
-          "error"
-        ],
-        "php": "\\LogicException",
-        "python": "RuntimeError",
-        "node": "Error"
-      },
-      "internal": {
-        "name": [
-          "internal",
-          "error"
-        ],
-        "php": "\\Error",
-        "python": "RuntimeError",
-        "node": "Error"
-      }
-    },
-    "fixed": [
-      {
-        "category": "type",
-        "php": [
-          "\\ArgumentCountError",
-          "\\Error"
-        ],
-        "python": [
-          "TypeError"
-        ],
-        "node": [
-          "TypeError"
-        ],
-        "fixed": true
-      }
-    ]
+    "binding": [],
+    "wrapped": []
   },
   "units": [
     {
@@ -143,7 +117,7 @@
       "name": [
         "cookies"
       ],
-      "module": "",
+      "module": "cookies",
       "kind": "functions",
       "visibility": "public",
       "origin": "generated",
@@ -161,11 +135,20 @@
               "name": [
                 "lines"
               ],
-              "type": "list<latin1>",
+              "type": {
+                "list": "latin1"
+              },
               "required": true
             }
           ],
-          "returns": "list<tuple<text, text>>",
+          "returns": {
+            "list": {
+              "tuple": [
+                "text",
+                "text"
+              ]
+            }
+          },
           "raises": [],
           "wait": "none",
           "core": {
@@ -199,7 +182,9 @@
               "name": [
                 "attributes"
               ],
-              "type": "attributes",
+              "type": {
+                "unit": "attributes"
+              },
               "required": true
             }
           ],
@@ -249,7 +234,7 @@
       "name": [
         "attributes"
       ],
-      "module": "",
+      "module": "cookies",
       "kind": "record",
       "visibility": "public",
       "origin": "generated",
@@ -267,9 +252,13 @@
             "max",
             "age"
           ],
-          "type": "uint",
-          "default": {
-            "computed": "CK-6.3"
+          "type": {
+            "optional": "uint"
+          },
+          "required": true,
+          "reason": {
+            "todo": "schema: a record field has no reason yet (T-4)",
+            "found": "CK-6.3"
           }
         },
         {
@@ -292,9 +281,15 @@
             "same",
             "site"
           ],
-          "type": "same_site",
-          "default": {
-            "computed": "CK-6.3"
+          "type": {
+            "optional": {
+              "unit": "same_site"
+            }
+          },
+          "required": true,
+          "reason": {
+            "todo": "schema: a record field has no reason yet (T-4)",
+            "found": "CK-6.3"
           }
         }
       ]
@@ -305,7 +300,7 @@
         "same",
         "site"
       ],
-      "module": "",
+      "module": "cookies",
       "kind": "enum",
       "visibility": "public",
       "origin": "generated",

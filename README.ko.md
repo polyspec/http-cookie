@@ -26,8 +26,8 @@ let attributes = Attributes { path: "/".into(), max_age: Some(60), secure: true,
 assert_eq!(set_cookie("__Host-id", "v", &attributes)?, b"__Host-id=v; Max-Age=60; Path=/; Secure; HttpOnly; SameSite=Lax");
 ```
 
-PHP, Python, Node 바인딩은 초안인 [contracts/interface.json](contracts/interface.json)에서 생성할 예정이며, 아직 바인딩은
-없다.
+PHP, Python, Node 바인딩은 crate 패키지에 들어가는 초안 인터페이스 계약
+[packages/rust/interface.json](packages/rust/interface.json)에서 생성할 예정이며, 아직 바인딩은 없다.
 
 ## 검사
 
