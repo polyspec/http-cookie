@@ -40,8 +40,9 @@ classes `Cookies<Category>Error` with `kind` and `status`. No release is publish
 ```
 make check           # the core: clippy -D warnings, rustfmt --check and the tests; bindgen check
 make bindings        # generate the bindings into packages/*/generated
-make test-bindings   # clippy of the workspace, then the bindings built, installed and tested in each language
+make test-bindings   # clippy of the workspace, tsc of the declarations, then the bindings built, installed and tested in each language
 ```
 
 Requirements: the Rust release of `rust-toolchain.toml` and Node for bindgen; for the bindings Python 3.14, PHP 8.4
-with its `php-config` and PHPUnit (`PYTHON`, `PHP`, `PHP_CONFIG`, `PHPUNIT`). Windows is not supported yet.
+with its `php-config`, and PHPUnit, which `composer install` puts into `vendor/` (`PYTHON`, `PHP`, `PHP_CONFIG`,
+`PHPUNIT`). Windows is not supported yet.

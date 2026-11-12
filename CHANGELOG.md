@@ -20,7 +20,8 @@
   tracked thin packages `packages/php-ext`, `packages/python` and `packages/ts`, which `bindgen scaffold` writes, and
   `make bindings`, which writes their `generated/` sources. `make test-bindings` builds and installs each package and
   runs the tests that bindgen generates and the contract cases in each language (CK-14.5); `make check` runs `bindgen
-  check`.
+  check`, and `make check-declarations` checks the generated `index.d.ts` with `tsc --noEmit --strict`. TypeScript
+  (`package.json`, `package-lock.json`) and PHPUnit (`composer.json`) are development dependencies of the repository.
 - The repository is one Cargo workspace at the root with the core and the binding crates; `Cargo.lock` and the lints
   moved to the root. The core depends on `polyspec-bindgen-core` (a Git dependency until bindgen is released) and its
   `Error` implements `bindgen_core::Kinds`.

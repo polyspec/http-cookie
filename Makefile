@@ -15,7 +15,8 @@ MATURIN := maturin==1.16.0
 # ext-php-rs reads them when it builds the extension.
 export PHP PHP_CONFIG
 
-.PHONY: check test lint-rust fmt-check bindgen-check bindings test-bindings lint-bindings test-python test-node test-php
+.PHONY: check test lint-rust fmt-check bindgen-check bindings test-bindings lint-bindings test-python test-node test-php \
+	check-declarations
 
 # The core and the contract; none of them needs the generator (bindgen design L-2).
 check: lint-rust fmt-check test bindgen-check
@@ -37,10 +38,17 @@ bindgen-check:
 bindings:
 	$(BINDGEN) generate --root .
 
-test-bindings: lint-bindings test-python test-node test-php
+test-bindings: lint-bindings check-declarations test-python test-node test-php
 
 lint-bindings: bindings
 	$(CARGO) clippy $(CARGOFLAGS) --workspace --locked --all-targets --features panic-test -- -D warnings
+
+# The TypeScript compiler of package-lock.json checks the generated declarations of the Node binding.
+node_modules/.package-lock.json: package-lock.json
+	npm ci --no-audit --no-fund
+
+check-declarations: bindings node_modules/.package-lock.json
+	node_modules/.bin/tsc --noEmit --strict packages/ts/generated/index.d.ts
 
 # The wheel, installed into a virtual environment; the generated tests (G-5) and the contract cases (CK-14.5).
 test-python: bindings

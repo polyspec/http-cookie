@@ -3,3 +3,5 @@
 /var/
 /packages/*/generated/
 __pycache__/
+/node_modules/
+/vendor/

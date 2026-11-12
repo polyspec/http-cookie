@@ -40,8 +40,9 @@ Composer 패키지 `polyspec/http-cookies`(PHP 확장 `polyspec_http_cookies`, P
 ```
 make check           # 코어: clippy -D warnings, rustfmt --check, 시험; bindgen check
 make bindings        # 바인딩을 packages/*/generated에 생성
-make test-bindings   # workspace clippy, 그다음 언어마다 바인딩을 빌드·설치·시험
+make test-bindings   # workspace clippy, 선언의 tsc, 그다음 언어마다 바인딩을 빌드·설치·시험
 ```
 
 요구 사항: `rust-toolchain.toml`의 Rust 릴리스와 bindgen을 돌릴 Node. 바인딩에는 Python 3.14, PHP 8.4와 그
-`php-config`, PHPUnit(`PYTHON`, `PHP`, `PHP_CONFIG`, `PHPUNIT`). Windows는 아직 지원하지 않는다.
+`php-config`, `composer install`이 `vendor/`에 설치하는 PHPUnit(`PYTHON`, `PHP`, `PHP_CONFIG`, `PHPUNIT`). Windows는
+아직 지원하지 않는다.

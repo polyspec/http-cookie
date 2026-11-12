@@ -17,7 +17,8 @@ Rules for every change of http-cookies. The rules of the library are in [docs/sp
 - `contracts/cookies.json`: the cases of the rules (CK-14).
 - `scripts/bindgen.mts`: runs bindgen (see "Bindings").
 - `docs/spec/`: the specification. Root: `AGENTS.md`, `README.md`, `CHANGELOG.md` and their Korean translations
-  (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`.
+  (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`, and `package.json`,
+  `package-lock.json` and `composer.json` of the development tools.
 - There is no implementation in another language to remove or to keep beside the bindings.
 
 ## Bindings
@@ -28,13 +29,19 @@ Rules for every change of http-cookies. The rules of the library are in [docs/sp
 - bindgen itself is the TypeScript tool of the same repository, which no registry holds yet. `scripts/bindgen.mts`
   takes it from the checkout that Cargo made of the commit that `Cargo.lock` pins, copies it into
   `var/bindgen/<commit>` and installs its dependencies there by its `package-lock.json`, so that the generator and
-  `bindgen_core` are one version. This is not the usual installation of a tool; it ends when bindgen is released.
+  `bindgen_core` are one version. This is not the usual installation of a tool and holds only until the first release
+  of bindgen: after it, bindgen is an npm package that `package-lock.json` pins, and the script goes.
 - `make bindings` generates; every make target that builds or tests a binding runs it first. `make test-bindings` runs
-  clippy on the whole workspace, then `make test-python` (a wheel built by maturin and installed into `var/venv`),
+  clippy on the whole workspace, `make check-declarations` (`tsc --noEmit --strict` on the generated `index.d.ts`),
+  then `make test-python` (a wheel built by maturin and installed into `var/venv`),
   `make test-node` (the addon beside the generated entry, the package packed and installed into `var/node`) and `make
   test-php` (the extension built against `PHP_CONFIG` and loaded into `PHP`, the tests on `PHPUNIT`). Each runs the
   tests that bindgen generates and the contract cases. The variables `PYTHON` (3.14 or later), `PHP` (8.4 or later),
   `PHP_CONFIG` and `PHPUNIT` name the runtimes; `CARGOFLAGS` adds arguments to every cargo build.
+- The development tools are dependencies of the repository: TypeScript in `package.json`, pinned by
+  `package-lock.json`, and PHPUnit in `require-dev` of `composer.json`, installed into `vendor/` (the default of
+  `PHPUNIT`). `composer.lock` is not tracked yet, so PHPUnit is not pinned: the lock is written by `composer update`
+  on a machine that reaches Packagist and is then tracked.
 
 ## Changes
 
