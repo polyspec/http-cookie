@@ -117,7 +117,7 @@
       "name": [
         "cookies"
       ],
-      "module": "cookies",
+      "module": "",
       "kind": "functions",
       "visibility": "public",
       "origin": "generated",
@@ -234,7 +234,7 @@
       "name": [
         "attributes"
       ],
-      "module": "cookies",
+      "module": "",
       "kind": "record",
       "visibility": "public",
       "origin": "generated",
@@ -256,10 +256,7 @@
             "optional": "uint"
           },
           "required": true,
-          "reason": {
-            "todo": "schema: a record field has no reason yet (T-4)",
-            "found": "CK-6.3"
-          }
+          "reason": "CK-6.3"
         },
         {
           "name": [
@@ -287,10 +284,7 @@
             }
           },
           "required": true,
-          "reason": {
-            "todo": "schema: a record field has no reason yet (T-4)",
-            "found": "CK-6.3"
-          }
+          "reason": "CK-6.3"
         }
       ]
     },
@@ -300,7 +294,7 @@
         "same",
         "site"
       ],
-      "module": "cookies",
+      "module": "",
       "kind": "enum",
       "visibility": "public",
       "origin": "generated",
