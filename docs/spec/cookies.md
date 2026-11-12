@@ -1,0 +1,147 @@
+# http-cookies: rules
+
+This document is the specification of http-cookies. A rule is a list item `**CK-n**`; a statement of a rule has the
+anchor `CK-n.m`, and a test names the statement that it checks. RFC 6265 is "HTTP State Management Mechanism".
+rfc6265bis is the Internet-Draft draft-ietf-httpbis-rfc6265bis-22, which revises RFC 6265 and describes what current
+browsers do with a `Set-Cookie` field; a section number of rfc6265bis below is a section of that draft.
+
+## Scope
+
+- **CK-1** <a id="CK-1.1"></a> The library reads the cookies of a request from its `Cookie` field lines (CK-2 to CK-5)
+  and writes the field value of one `Set-Cookie` field line (CK-6 to CK-12). <a id="CK-1.2"></a> Both are pure
+  functions: they read no clock, no file, no environment and no random source, and the same arguments give the same
+  result. <a id="CK-1.3"></a> The library holds no policy of an application: it does not choose a cookie name, an
+  attribute or the time to write a cookie, and it has no default for an attribute; the caller states each attribute.
+  <a id="CK-1.4"></a> Every rule is in the Rust crate `polyspec-http-cookies` (`packages/rust`); a binding converts
+  types and holds no rule.
+
+## Reading the `Cookie` field
+
+- **CK-2** <a id="CK-2.1"></a> The input is the list of the field values of the `Cookie` field lines of one request, in
+  the order in which they were received, each as the bytes of its field value as received. <a id="CK-2.2"></a> A request
+  without a `Cookie` field gives the empty list, which gives no cookies. <a id="CK-2.3"></a> The lines are read one after
+  another, which gives the cookies of the lines joined with `; `: a user agent sends one `Cookie` line (RFC 6265,
+  section 5.4), HTTP/2 joins its `cookie` lines with `; ` (RFC 9113, section 8.2.3), and no pair crosses the end of a
+  line because a line ends a pair as `;` does. <a id="CK-2.4"></a> A host passes the lines that it received and does not
+  join them; a host whose runtime gives the lines already joined into one value passes that value as one line.
+- **CK-3** <a id="CK-3.1"></a> A line splits at each `;` (0x3B) into pairs. <a id="CK-3.2"></a> Spaces (0x20) and tabs
+  (0x09) at both ends of a pair are removed; such bytes inside a pair are kept. <a id="CK-3.3"></a> A pair splits at its
+  first `=` (0x3D) into a name, the bytes before it, and a value, the bytes after it; a later `=` is a byte of the value.
+- **CK-4** <a id="CK-4.1"></a> The name is not decoded: its bytes are its text. <a id="CK-4.2"></a> The value is
+  percent-decoded: `%` followed by two hexadecimal digits, of either case, is the byte of those digits, and every other
+  byte is itself, which includes `+`, a `%` that two hexadecimal digits do not follow, a double quote and a comma.
+  <a id="CK-4.3"></a> A leading U+FEFF of a value is a character of the value, and a value in double quotes keeps its
+  quotes. <a id="CK-4.4"></a> A pair without `=`, the empty pair included, gives no cookie. <a id="CK-4.5"></a> A pair
+  with an empty name gives no cookie. <a id="CK-4.6"></a> A pair whose name is not valid UTF-8 gives no cookie.
+  <a id="CK-4.7"></a> A pair whose decoded value is not valid UTF-8 gives no cookie. <a id="CK-4.8"></a> RFC 6265 gives a
+  cookie value no encoding for the bytes outside its `cookie-octet` (section 4.1.1), so a value needs one; the writer of
+  CK-8 uses percent-encoding (RFC 3986, section 2.1), and a browser script that writes a cookie value with
+  `encodeURIComponent` gives bytes that this decoding reads back. A `+` stays `+` because `+` for a space belongs to
+  `application/x-www-form-urlencoded`, not to percent-encoding. A cookie that another writer wrote with a literal `%`
+  and two hexadecimal digits is read decoded, as every cookie is: the reader cannot know the writer of a cookie, so it
+  applies the one decoding to all of them.
+- **CK-5** <a id="CK-5.1"></a> The cookies of a request are an ordered map from names to values, in the order in which
+  each name first gives a cookie. <a id="CK-5.2"></a> Of the pairs that give a cookie, the first of a name counts and a
+  later pair of that name gives none. A pair that gives no cookie (CK-4.4 to CK-4.7) does not count, so a later pair of
+  its name counts. <a id="CK-5.3"></a> RFC 6265, section 5.4, step 2, makes a user agent send the cookies with longer
+  paths first, so the first cookie of a name is the cookie of the most specific path. RFC 6265, section 4.2.2, tells a
+  server not to rely on the order of the cookies; a user agent may send two cookies of one name with paths of one
+  length, and then the first one counts. <a id="CK-5.4"></a> Reading never fails: every list of byte strings gives a map.
+
+### Inputs that give no cookie
+
+A `Cookie` field holds every cookie that the browser keeps for the host and the path of the request, also those that
+another application of the same host or a script of the page wrote. A pair that this reader cannot give as a cookie is
+therefore not a fault of the request, and failing the whole field for it would let any writer of the host stop the
+reading of every cookie. Each row below is a part of the input that gives nothing; the case shows that it changes no
+other cookie. The code names the rule at the place where it leaves the bytes.
+
+| Rule | Bytes that give nothing | Why | Cases |
+|---|---|---|---|
+| CK-3.2 | Spaces and tabs at both ends of a pair | RFC 6265, section 5.4, step 4, has a user agent write `; ` between pairs; section 5.2 removes spaces and tabs around a name and a value of `Set-Cookie`, so they are no part of either | `spaces_and_tabs_at_the_start_of_a_pair_are_removed`, `spaces_and_tabs_at_the_end_of_a_pair_are_removed` |
+| CK-4.4 | A pair without `=`, the empty pair included | A cookie with an empty name is sent as its value alone (rfc6265bis, section 5.8.3, step 6), so such a pair is a nameless cookie or nothing; a map has no entry without a name, and rfc6265bis, section 4.1.1, forbids a server to produce one | `a_pair_without_an_equals_sign_gives_no_cookie`, `empty_pairs_give_no_cookie` |
+| CK-4.5 | A pair with an empty name | As CK-4.4: a nameless cookie | `a_pair_with_an_empty_name_gives_no_cookie` |
+| CK-4.6 | A pair whose name is not valid UTF-8 | A name of the result is text; replacing its bytes would give the name of another cookie | `a_name_that_is_not_utf8_gives_no_cookie` |
+| CK-4.7 | A pair whose decoded value is not valid UTF-8 | A value of the result is text; a replacement character would give another value | `a_value_that_is_not_utf8_gives_no_cookie_and_a_later_pair_counts` |
+| CK-5.2 | A later pair of a name that gave a cookie | CK-5.3: the first is the cookie of the most specific path | `the_first_cookie_of_a_name_counts` |
+
+## Writing a `Set-Cookie` field
+
+- **CK-6** <a id="CK-6.1"></a> `set_cookie(name, value, attributes)` returns the field value of one `Set-Cookie` field
+  line (RFC 6265, section 4.1), which is ASCII. <a id="CK-6.2"></a> The attributes are `path` (text), `max_age` (a
+  non-negative integer or absent), `secure` (a boolean), `http_only` (a boolean) and `same_site` (`Strict`, `Lax`,
+  `None` or absent). <a id="CK-6.3"></a> `path`, `secure` and `http_only` have no default (CK-1.3); an absent `max_age`
+  writes no `Max-Age`, which makes a cookie that ends with the browser session (RFC 6265, section 5.3, step 3), and an
+  absent `same_site` writes no `SameSite`. <a id="CK-6.4"></a> The checks run in this order and the first that fails is
+  the error: the name (CK-7), the path (CK-10), the size (CK-11.3), the prefix (CK-12) and `SameSite=None` (CK-12.4).
+- **CK-7** <a id="CK-7.1"></a> The name is a `token` (RFC 6265, section 4.1.1, `cookie-name`; RFC 9110, section 5.6.2):
+  one or more of the characters `!`, `#`, `$`, `%`, `&`, `'`, `*`, `+`, `-`, `.`, `^`, `_`, `` ` ``, `|`, `~`, the ASCII
+  digits and the ASCII letters. <a id="CK-7.2"></a> Another name, the empty name included, fails with the kind
+  `invalid_name` and the message `a cookie name is not a token (CK-7)`. <a id="CK-7.3"></a> The name is written as it is,
+  because the reader does not decode a name (CK-4.1).
+- **CK-8** <a id="CK-8.1"></a> The value is any text. <a id="CK-8.2"></a> It is written as its UTF-8 bytes, where `%`
+  and every byte that is not a `cookie-octet` (RFC 6265, section 4.1.1: 0x21, 0x23 to 0x2B, 0x2D to 0x3A, 0x3C to 0x5B
+  and 0x5D to 0x7E) is written as `%` and the two uppercase hexadecimal digits of the byte. <a id="CK-8.3"></a> The
+  written value is therefore a `cookie-value`, and reading it with CK-4 gives the text back. The empty text is written as
+  the empty value.
+- **CK-9** <a id="CK-9.1"></a> The field value is `<name>=<value>`, then `; Max-Age=<max_age>` when `max_age` is
+  present, `; Path=<path>`, `; Secure` when `secure` is true, `; HttpOnly` when `http_only` is true and
+  `; SameSite=<same_site>` when `same_site` is present. <a id="CK-9.2"></a> This is the order of the alternatives of
+  `cookie-av` (rfc6265bis, section 4.1.1), with the names of the attributes in the case of that grammar. A user agent
+  reads the attributes in any order (RFC 6265, section 5.2), so one fixed order gives one form for one cookie.
+  <a id="CK-9.3"></a> The library writes no `Expires`, no `Domain` and no other attribute. `Max-Age` alone gives the
+  lifetime (RFC 6265, section 5.3, step 3, prefers it to `Expires`), and an `Expires` date needs a clock, which a pure
+  function has not (CK-1.2). A cookie without `Domain` is host-only (RFC 6265, section 5.3, step 6): only its own host
+  sets and receives it, which `__Host-` requires (CK-12.2).
+- **CK-10** <a id="CK-10.1"></a> The path starts with `/`, every character of it is 0x20 to 0x7E other than `;`
+  (RFC 6265, section 4.1.1, `path-value`), and it has at most 1024 characters (rfc6265bis, sections 5.6 and 5.7: a user
+  agent ignores a longer attribute value). <a id="CK-10.2"></a> Another path fails with the kind `invalid_cookie_path` and the
+  message `a cookie path is not an absolute path of at most 1024 printable ASCII characters without ';' (CK-10)`.
+  <a id="CK-10.3"></a> A user agent replaces a path that does not start with `/` by the default path of the request
+  (RFC 6265, section 5.2.4), and ignores a path longer than 1024 octets, so writing either would give a cookie of
+  another path than the caller stated.
+- **CK-11** <a id="CK-11.1"></a> `Max-Age` is written in decimal without leading zeros. <a id="CK-11.2"></a> `Max-Age=0`
+  removes the cookie: a user agent gives a `Max-Age` of zero or less the earliest expiry time (RFC 6265, section 5.2.2),
+  so a caller removes a cookie with its name, its path, the empty value and `max_age` 0. The grammar of
+  `max-age-av` (RFC 6265, section 4.1.1) starts with a non-zero digit; the library writes `0` all the same, because the
+  user agent rule of section 5.2.2 defines it and it is the one way to remove a cookie without `Expires` (CK-9.3).
+  A user agent limits the age that it keeps (rfc6265bis, section 5.5, at most 400 days); it stores the cookie with the
+  shorter age, so the library writes the given number. <a id="CK-11.3"></a> A name and a written value (CK-8.2) of more
+  than 4096 bytes together fail with the kind `too_large` and the message
+  `a cookie name and value are longer than 4096 bytes (CK-11)`, because a user agent ignores such a cookie entirely
+  (rfc6265bis, sections 5.6 and 5.7).
+- **CK-12** <a id="CK-12.1"></a> A name that starts with `__Secure-`, compared without regard to ASCII case, requires
+  `secure` (rfc6265bis, section 4.1.3.1). <a id="CK-12.2"></a> A name that starts with `__Host-`, compared without
+  regard to ASCII case, requires `secure` and the path `/`; it has no `Domain`, which the library never writes (CK-9.3)
+  (rfc6265bis, section 4.1.3.2). <a id="CK-12.3"></a> A name that does not meet the condition of its prefix fails with
+  the kind `prefix_not_met` and the message `a cookie name with the prefix __Secure- or __Host- lacks the attributes
+  that the prefix requires (CK-12)`. A user agent compares the prefixes without regard to case (rfc6265bis, section 5.4)
+  and ignores a cookie that does not meet the condition of its prefix entirely (section 5.7, steps 20 and 21), so the
+  library compares as the user agent does. <a id="CK-12.4"></a> `same_site` `None` requires `secure`; otherwise the
+  call fails with the kind `same_site_none_not_secure` and the message
+  `a cookie with SameSite=None lacks Secure (CK-12)`, because a user agent ignores such a cookie entirely (rfc6265bis,
+  section 5.7, step 19). <a id="CK-12.5"></a> The library fails instead of writing these cookies because the user agent
+  would drop them without a sign to the server.
+
+## Errors
+
+- **CK-13** <a id="CK-13.1"></a> Every failure is an error of the crate's error enum with a kind, no HTTP status and the
+  message that its rule states; the binding gives the message as it is. <a id="CK-13.2"></a> The kinds are
+  `invalid_name` (CK-7), `invalid_cookie_path` (CK-10), `too_large` (CK-11.3), `prefix_not_met` (CK-12.3) and
+  `same_site_none_not_secure` (CK-12.4), all of the category `value`. The path kind is not `invalid_path`, the kind of a binding that refuses a file system path, so that one kind names one failure. <a id="CK-13.3"></a> A failure is an error of the
+  call that gives the arguments, not of a request, so no kind has an HTTP status. <a id="CK-13.4"></a> Reading
+  (CK-5.4) has no error.
+
+## Verification
+
+- **CK-14** <a id="CK-14.1"></a> `contracts/cookies.json` holds the cases of the two operations: group `parse` for
+  CK-2 to CK-5 and group `set_cookie` for CK-6 to CK-12. A case names the statements that it checks.
+  <a id="CK-14.2"></a> A byte string of a case is JSON text whose characters U+0000 to U+00FF are its bytes. A failure
+  is the key `raises` with `kind`, `status`, `category` and `message`, and such a case has no result key.
+  <a id="CK-14.3"></a> The crate runs every case. It also checks every byte value in each place of the grammar (a byte of
+  a name and of a value of `Cookie`, a byte of a `Set-Cookie` name, value and path), and the boundaries of a string: a
+  `%` at the end of a value and with one digit, a pair at the start and at the end of a line, a line split before and
+  after a `;`, and the sizes 1024 and 1025 of a path and 4096 and 4097 of a name and value.
+  <a id="CK-14.4"></a> A property test checks for random input that reading a list of lines equals reading them joined
+  with `; ` (CK-2.3), that reading never panics (CK-5.4), and that reading a written cookie gives its name and value
+  (CK-8.3).
