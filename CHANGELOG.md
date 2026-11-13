@@ -1,5 +1,29 @@
 <!-- doc-id: changelog -->
 
+## Unreleased
+
+- The tools are pinned and installed into `var/tools` of the checkout as in binding: `mise.toml` and `mise.lock` pin
+  Node.js 26.12.0, npm 12.2.0, Go 1.27.3, Python 3.14.8, Composer 2.10.3 and the wasm-bindgen CLI 0.2.130 with the
+  digests of binding, `config/toolchain.json` pins mise 2026.10.10, `.php-version` names PHP 8.4, and
+  `rust-toolchain.toml` adds the target `wasm32-unknown-unknown`. `package.json` names npm 12.2.0 in `devEngines` and
+  adds `@polyspec/kit` 0.0.109, whose installers `make bootstrap`, `make install`, `make install-tools`, `make
+  install-packages` and `make toolchain-lock` run, as the recipes of binding do. Every recipe runs with `var/tools/bin`
+  and the shims of mise first on `PATH`, and `GO`, `GOFMT`, `WASM_BINDGEN`, `PHP` and `PHP_CONFIG` name the tools of
+  `var/tools`. Before, every recipe ran the tools that the `PATH` of the machine named, at no pinned release.
+
+- `make test-bindings` builds and tests every target of the contract (binding BD-27): `make test-wasm` and `make
+  test-go` are added beside `make test-python`, `make test-node` and `make test-php`. `make
+  test-wasm` runs the generated tests and the new contract cases `packages/ts/tests/cases.wasm.test.mjs` on node
+  --test through the subpath `./wasm` of the installed package; the module and its glue are written by the
+  wasm-bindgen CLI, whose release must be that of the `wasm-bindgen` crate, before the package is packed, so `make
+  test-node` and `make test-wasm` share the step `node-package`. `make test-go` builds the static library with the
+  features `panic-test` and `codec-test`, runs gofmt and go vet, then the generated tests and the new contract cases
+  `packages/go/tests/cases_test.go` on go test, with the Go of the go directive of `packages/go/go.mod` and
+  `GOTOOLCHAIN=local`. `make check-declarations` also checks the declarations of the WASM binding. The variables `GO`,
+  `GOFMT` and `WASM_BINDGEN` name the two tools. `make binding-check` is renamed `make bindings-check`, and `make lint`
+  runs `make lint-rust` and `make fmt-check`. Before, no make target built or tested the Go and
+  WASM bindings.
+
 - The Go files that binding generates are tracked and the other generated directories of Go and WASM are ignored:
   `packages/go/zz_generated_*.go`, `packages/go/errors/` and `packages/go/internal/binding/` hold the files
   `zz_generated_*.go` that `make bindings` writes, which binding owns in the Go module and which are tracked (binding

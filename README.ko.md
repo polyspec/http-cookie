@@ -1,5 +1,5 @@
 <!-- doc-id: readme -->
-<!-- source-sha256: 5f4b7d8bff81d3f6c7a7466ddebd3e2984aa3e27563167518c7d6fd4bbb6a8fa -->
+<!-- source-sha256: a43bba5806bb2c6b0fb57470da726f32276511e6e5df0adb2b96856a4aff1f4e -->
 # http-cookie
 
 [English](README.md)
@@ -41,11 +41,14 @@ Composer 패키지 `polyspec/http-cookie`(PHP 확장 `polyspec_http_cookie`, PHP
 ## 검사
 
 ```
+make bootstrap       # devEngines의 npm으로 @polyspec/kit을 포함한 package-lock.json 설치
+make install         # mise.toml, rust-toolchain.toml, .php-version의 도구를 var/tools에 설치
 make check           # 코어: clippy -D warnings, rustfmt --check, 시험; binding check
 make bindings        # 바인딩을 packages/*/generated에 생성
 make test-bindings   # workspace clippy, 선언의 tsc, 그다음 언어마다 바인딩을 빌드·설치·시험
 ```
 
-요구 사항: `rust-toolchain.toml`의 Rust 릴리스와 binding을 돌릴 Node. 바인딩에는 Python 3.14, PHP 8.4와 그
-`php-config`, `composer install`이 `vendor/`에 설치하는 PHPUnit(`PYTHON`, `PHP`, `PHP_CONFIG`, `PHPUNIT`). Windows는
-아직 지원하지 않는다.
+요구 사항: 기계의 rustup과 `.php-version`의 PHP 8.4와 그 `php-config`. `make install`이 `rust-toolchain.toml`의 Rust
+릴리스와 `mise.toml`의 도구(Node, Python 3.14, Go, Composer, wasm-bindgen CLI)를 `var/tools`에 설치하고, `composer
+install`이 `vendor/`에 PHPUnit을 설치한다(`PYTHON`, `PHP`, `PHP_CONFIG`, `PHPUNIT`, `GO`, `GOFMT`, `WASM_BINDGEN`).
+Windows는 아직 지원하지 않는다.

@@ -1,5 +1,28 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: 15f6e654a687e3414c19445476a98ad1569d7336fe9f72da48fb2943e3b55cac -->
+<!-- source-sha256: 00cba3ad790849135c42992f8d8a65d3006d200a6b5dd1021ec37a8fd9243c90 -->
+
+## Unreleased
+
+- 도구가 binding처럼 고정되고 checkout의 `var/tools`에 설치된다. `mise.toml`과 `mise.lock`은 Node.js 26.12.0, npm
+  12.2.0, Go 1.27.3, Python 3.14.8, Composer 2.10.3, wasm-bindgen CLI 0.2.130을 binding의 digest로 고정하고,
+  `config/toolchain.json`은 mise 2026.10.10을 고정하며, `.php-version`은 PHP 8.4를 적고, `rust-toolchain.toml`은
+  target `wasm32-unknown-unknown`을 더한다. `package.json`은 `devEngines`에 npm 12.2.0을 적고 `@polyspec/kit` 0.0.109를
+  더한다. binding의 recipe처럼 `make bootstrap`, `make install`, `make install-tools`, `make install-packages`, `make
+  toolchain-lock`이 그 설치기를 실행한다. 모든 recipe는 `var/tools/bin`과 mise의 shim을 `PATH` 앞에 두고 실행하며,
+  `GO`, `GOFMT`, `WASM_BINDGEN`, `PHP`, `PHP_CONFIG`는 `var/tools`의 도구를 가리킨다. 전에는 모든 recipe가 기계의
+  `PATH`가 가리키는 도구를 고정된 판 없이 실행했다.
+
+- `make test-bindings`가 계약의 모든 target을 빌드하고 시험한다(binding BD-27). `make
+  test-python`, `make test-node`, `make test-php` 곁에 `make test-wasm`과 `make test-go`가 더해진다. `make test-wasm`은
+  생성된 시험과 새 contract case `packages/ts/tests/cases.wasm.test.mjs`를 설치된 패키지의 subpath `./wasm`을 통해
+  node --test로 실행한다. 모듈과 그 glue는 패키지를 묶기 전에 wasm-bindgen CLI가 쓰며, 그 CLI의 판은 `wasm-bindgen`
+  crate의 판이어야 한다. 그래서 `make test-node`와 `make test-wasm`은 단계 `node-package`를 함께 쓴다. `make
+  test-go`는 feature `panic-test`와 `codec-test`로 정적 라이브러리를 빌드하고, gofmt와 go vet을 실행한 다음, 생성된
+  시험과 새 contract case `packages/go/tests/cases_test.go`를 go test로 실행한다. Go는 `packages/go/go.mod`의 go
+  지시문의 판이고 `GOTOOLCHAIN=local`로 실행한다. `make check-declarations`는 WASM 바인딩의 선언도 검사한다. 변수
+  `GO`, `GOFMT`, `WASM_BINDGEN`이 두 도구를 가리킨다. `make binding-check`는 `make bindings-check`로 이름이 바뀌고,
+  `make lint`는 `make lint-rust`와 `make fmt-check`를 실행한다. 전에는 Go와 WASM 바인딩을
+  빌드하거나 시험하는 make target이 없었다.
 
 - binding이 생성하는 Go 파일을 추적하고 Go와 WASM의 다른 생성 디렉터리는 무시한다: `packages/go/zz_generated_*.go`,
   `packages/go/errors/`, `packages/go/internal/binding/`에는 `make bindings`가 쓰는 `zz_generated_*.go` 파일이 있고,

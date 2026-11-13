@@ -40,11 +40,14 @@ classes `HttpCookie<Category>Error` with `kind` and `status`. No release is publ
 ## Checks
 
 ```
+make bootstrap       # package-lock.json, @polyspec/kit included, with the npm of devEngines
+make install         # the tools of mise.toml, rust-toolchain.toml and .php-version into var/tools
 make check           # the core: clippy -D warnings, rustfmt --check and the tests; binding check
 make bindings        # generate the bindings into packages/*/generated
 make test-bindings   # clippy of the workspace, tsc of the declarations, then the bindings built, installed and tested in each language
 ```
 
-Requirements: the Rust release of `rust-toolchain.toml` and Node for binding; for the bindings Python 3.14, PHP 8.4
-with its `php-config`, and PHPUnit, which `composer install` puts into `vendor/` (`PYTHON`, `PHP`, `PHP_CONFIG`,
-`PHPUNIT`). Windows is not supported yet.
+Requirements: rustup and the PHP 8.4 of `.php-version` with its `php-config` on the machine; `make install` installs
+the Rust release of `rust-toolchain.toml` and the tools of `mise.toml` (Node, Python 3.14, Go, Composer and the
+wasm-bindgen CLI) into `var/tools`, and `composer install` puts PHPUnit into `vendor/` (`PYTHON`, `PHP`, `PHP_CONFIG`,
+`PHPUNIT`, `GO`, `GOFMT`, `WASM_BINDGEN`). Windows is not supported yet.
