@@ -1,5 +1,5 @@
 <!-- doc-id: agents -->
-<!-- source-sha256: 011fa9b9dc232b10c532f4b16a146298c54737ec856d990705d9ca3c4def68b7 -->
+<!-- source-sha256: ac6d95529911e76d092796d48f434670b436454cf752ffff3186798086bdc973 -->
 # AGENTS.md
 
 http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 규칙은 [docs/spec/cookies.ko.md](docs/spec/cookies.ko.md)에 있다.
@@ -24,8 +24,8 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
 - `contracts/cookies.json`: 규칙의 case(CK-14).
 - `scripts/binding.mts`: binding을 실행한다("바인딩" 절을 본다).
 - `docs/spec/`: 명세. 루트: `AGENTS.md`, `README.md`, `CHANGELOG.md`와 그 한국어 번역
-  (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`, 그리고
-  개발 도구의 `package.json`, `package-lock.json`, `composer.json`, `composer.lock`, 그리고 checkout의 도구의
+  (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`, `.github/`("CI와 release" 절을 본다),
+  `config/release.json`, 그리고 개발 도구의 `package.json`, `package-lock.json`, `composer.json`, `composer.lock`, 그리고 checkout의 도구의
   `mise.toml`, `mise.lock`, `config/toolchain.json`, `.php-version`, `.npmrc`, `.mise/locks/`("바인딩" 절을 본다).
 - 바인딩 옆에 지우거나 남겨 둘 다른 언어의 구현은 없다.
 
@@ -105,6 +105,28 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
   `clippy.toml`은 `Option::{unwrap_or, unwrap_or_default, unwrap_or_else, map_or, map_or_else}`와
   `Result::{ok, map_or, map_or_else}`를 금지한다. 규칙에 필요한 사용에는 `#[allow(..., reason = "<rule id>")]`를 붙인다.
 - 이 crate는 I/O를 하지 않고 시계, 환경, 난수원을 읽지 않는다(CK-1.2).
+
+## CI와 release
+
+- `.github/workflows/ci.yml`은 `main`의 push와 수동 실행에서 돈다. matrix 항목마다 job 하나다. `core`는 `lint-rust`,
+  `fmt-check`, `test`, `bindings-check`, `release-coverage`를 실행하고, `bindings`는 `make test-bindings`의 대상을 실행한다.
+  각 job은 그 대상을 `make ci-targets`로 실행한다. `make ci-targets`는 모든 대상을 끝까지 실행하고 보고서
+  `var/ci/<name>/`을 쓴다. 마지막 job `ci-passed`는 다른 모든 job이 통과했을 때만 통과한다. job은 `ubuntu-26.04-arm`에서
+  돌고, 모든 action을 commit으로 고정하며, `timeout-minutes`를 두지 않고, step의 모든 명령을 make target 하나로
+  실행한다. 그래야 Makefile의 설정이 그 명령에 적용되기 때문이다. `.github/actions/bootstrap`은 모든 job의 bootstrap이고,
+  `make install-php-tools`는 `mise.toml`의 Composer로 `composer.lock`의 PHPUnit을 `vendor/`에 설치한다.
+- `config/release.json`은 모든 package 파일을 분류하고, `make release-coverage`가 그것을 검사한다. tag `vX.Y.Z`는 코어
+  crate `packages/rust`를 Git tag로 release한다. Cargo 의존은 그것을 `tag = "vX.Y.Z"`로 가리킨다. 그 tag는 binding
+  manifest의 version이기도 하며, binding scaffold가 코어의 version으로 그 manifest를 쓴다. tag는 archive를 release하지
+  않고 Go module을 tag하지 않는다. 바인딩은 플랫폼마다 빌드되는데(abi3 wheel, PHP 확장, npm 플랫폼 package, Go 정적
+  라이브러리), kit 0.0.109의 release 도구는 npm package, Composer 소스 archive, 순수 Python wheel만 묶기 때문이다.
+- release는 `main`에서 성공한 `ci.yml`의 push 실행이나 수동 실행의 commit이다. version-bump commit `chore(release):
+  Release X.Y.Z`는 코어의 version(`packages/rust/Cargo.toml`의 `version`)을 정하고, binding scaffold(`node scripts/binding.mts scaffold --contract
+  packages/rust/interface.json`)로 binding manifest를 다시 쓰며, `Cargo.lock`의 로컬 package version을 맞추고, 두
+  changelog의 `## Unreleased`를 `## X.Y.Z`로 바꾸고 그 위에 빈 `## Unreleased`를 둔다. 그 push의 CI 실행이 성공하면
+  `.github/workflows/release.yml`이 스스로 시작하고, `gh workflow run release.yml -f run=<id>`가 그것을 다시 시작한다.
+  `make release-tag`가 그 commit에 annotated tag `vX.Y.Z`를 만들어 push하고, `make release-publish`와 `make
+  release-undraft`가 GitHub Release를 만든다. tag를 손으로 만들지 않는다.
 
 ## 플랫폼
 
