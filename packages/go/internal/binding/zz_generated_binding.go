@@ -26,6 +26,7 @@ import "C"
 
 import (
 	"encoding/binary"
+	"fmt"
 	"math"
 	"runtime"
 	"unsafe"
@@ -34,9 +35,9 @@ import (
 // entry is a function of the C ABI: the encoded arguments in, the encoded result or failure out, 0 or 1 back.
 type entry func(pointer *C.uint8_t, length C.size_t, result *C.polyspec_http_cookie_buffer) C.int32_t
 
-// call runs an entry with the encoded arguments and copies its result out of the buffer that Rust allocated, which it
-// then frees. The call returns when the core returns (wait none).
-func call(fn entry, args []byte) ([]byte, error) {
+// invoke runs an entry with the encoded arguments and copies its result out of the buffer that Rust allocated, which
+// it then frees. The call returns when the core returns (wait none).
+func invoke(fn entry, args []byte) ([]byte, error) {
 	var pointer *C.uint8_t
 	if len(args) > 0 {
 		pointer = (*C.uint8_t)(unsafe.Pointer(&args[0]))
@@ -57,14 +58,14 @@ func call(fn entry, args []byte) ([]byte, error) {
 
 // ParseCookie calls polyspec_http_cookie_parse_cookie with the encoded arguments (B-8).
 func ParseCookie(args []byte) ([]byte, error) {
-	return call(func(pointer *C.uint8_t, length C.size_t, result *C.polyspec_http_cookie_buffer) C.int32_t {
+	return invoke(func(pointer *C.uint8_t, length C.size_t, result *C.polyspec_http_cookie_buffer) C.int32_t {
 		return C.polyspec_http_cookie_parse_cookie(pointer, length, result)
 	}, args)
 }
 
 // SetCookie calls polyspec_http_cookie_set_cookie with the encoded arguments (B-8).
 func SetCookie(args []byte) ([]byte, error) {
-	return call(func(pointer *C.uint8_t, length C.size_t, result *C.polyspec_http_cookie_buffer) C.int32_t {
+	return invoke(func(pointer *C.uint8_t, length C.size_t, result *C.polyspec_http_cookie_buffer) C.int32_t {
 		return C.polyspec_http_cookie_set_cookie(pointer, length, result)
 	}, args)
 }
@@ -117,8 +118,9 @@ func (w *Writer) Bytes(value []byte) {
 // Reader decodes the result of a call. A result that does not follow the encoding, which only a fault of the
 // generated code can make, fails Finish with kind internal.
 type Reader struct {
-	bytes  []byte
-	failed bool
+	bytes   []byte
+	failed  bool
+	problem string
 }
 
 // NewReader reads an encoded result.
@@ -188,8 +190,11 @@ func (r *Reader) Bytes() []byte {
 
 // Finish is nil when the result was read whole, and an error of kind internal otherwise.
 func (r *Reader) Finish() error {
+	if r.problem != "" {
+		return internalError(r.problem)
+	}
 	if r.failed || len(r.bytes) != 0 {
-		return malformed()
+		return Malformed()
 	}
 	return nil
 }
@@ -354,17 +359,32 @@ type failure struct {
 	hasStatus bool
 	errno     int
 	hasErrno  bool
-	cause     error
 }
 
-func malformed() error {
-	return &HTTPCookieInternalError{failure{message: "internal error: the encoded result does not follow the encoding of the binding", kind: "internal"}}
+// Malformed is the error of a result that does not follow the encoding, which only a fault of the generated code
+// makes: kind internal.
+func Malformed() error {
+	return internalError("the encoded result does not follow the encoding of the binding")
 }
 
-// decodeFailure reads an encoded failure: the category, the message, the kind, the status and the errno.
+func internalError(detail string) error {
+	return &HTTPCookieInternalError{failure{message: fmt.Sprintf("internal error: %s", detail), kind: "internal"}}
+}
+
+// finished is the error of a failure whose properties were read whole, or kind internal.
+func finished(err error, properties *Reader) error {
+	if properties.Finish() != nil {
+		return Malformed()
+	}
+	return err
+}
+
+// decodeFailure reads an encoded failure: the category, the message, the kind, the status, the errno, the class of
+// the kind with the properties of its unit (E-2, I-3), and the error that a Go callback returned (U-3), which the call
+// returns unchanged.
 func decodeFailure(bytes []byte) error {
 	r := NewReader(bytes)
-	category := r.take(1)
+	head := r.take(1)
 	f := failure{message: r.Text(), kind: r.Text()}
 	if r.Tag() {
 		f.status, f.hasStatus = int(r.Uint()), true
@@ -372,24 +392,44 @@ func decodeFailure(bytes []byte) error {
 	if r.Tag() {
 		f.errno, f.hasErrno = int(r.Int()), true
 	}
+	class := r.take(1)
+	properties := NewReader(r.Bytes())
+	var call, index uint64
+	present := r.Tag()
+	if present {
+		call, index = r.Uint(), r.Uint()
+	}
 	if r.Finish() != nil {
-		return malformed()
+		return Malformed()
 	}
-	switch category[0] {
+	if present {
+		return raisedError(call, index)
+	}
+	category := head[0]
+	switch class[0] {
 	case 0:
-		return &HTTPCookieValueError{f}
-	case 1:
-		return &HTTPCookieTypeError{f}
-	case 2:
-		return &HTTPCookieIoError{f}
-	case 3:
-		return &HTTPCookieStoreError{f}
-	case 4:
-		return &HTTPCookieBusyError{f}
-	case 5:
-		return &HTTPCookieInternalError{f}
+		switch category {
+		case 0:
+			return finished(&HTTPCookieValueError{f}, properties)
+		case 1:
+			return finished(&HTTPCookieTypeError{f}, properties)
+		case 2:
+			return finished(&HTTPCookieIoError{f}, properties)
+		case 3:
+			return finished(&HTTPCookieStoreError{f}, properties)
+		case 4:
+			return finished(&HTTPCookieBusyError{f}, properties)
+		case 5:
+			return finished(&HTTPCookieInternalError{f}, properties)
+		}
+
 	}
-	return malformed()
+	return Malformed()
+}
+
+// raisedError is never reached: no call of http-cookie runs Go code.
+func raisedError(call, index uint64) error {
+	return internalError(fmt.Sprintf("U-3: no call runs Go code (%d, %d)", call, index))
 }
 
 // HTTPCookieValueError is an error of category value (E-7).
@@ -407,9 +447,6 @@ func (e *HTTPCookieValueError) Status() (int, bool) { return e.status, e.hasStat
 // Errno is the OS error number of an I/O failure, when there is one (B-4).
 func (e *HTTPCookieValueError) Errno() (int, bool) { return e.errno, e.hasErrno }
 
-// Unwrap is the error of a callback that the failure carries, or nil (E-7).
-func (e *HTTPCookieValueError) Unwrap() error { return e.cause }
-
 // HTTPCookieTypeError is an error of category type (E-7).
 type HTTPCookieTypeError struct{ failure }
 
@@ -424,9 +461,6 @@ func (e *HTTPCookieTypeError) Status() (int, bool) { return e.status, e.hasStatu
 
 // Errno is the OS error number of an I/O failure, when there is one (B-4).
 func (e *HTTPCookieTypeError) Errno() (int, bool) { return e.errno, e.hasErrno }
-
-// Unwrap is the error of a callback that the failure carries, or nil (E-7).
-func (e *HTTPCookieTypeError) Unwrap() error { return e.cause }
 
 // HTTPCookieIoError is an error of category io (E-7).
 type HTTPCookieIoError struct{ failure }
@@ -443,9 +477,6 @@ func (e *HTTPCookieIoError) Status() (int, bool) { return e.status, e.hasStatus 
 // Errno is the OS error number of an I/O failure, when there is one (B-4).
 func (e *HTTPCookieIoError) Errno() (int, bool) { return e.errno, e.hasErrno }
 
-// Unwrap is the error of a callback that the failure carries, or nil (E-7).
-func (e *HTTPCookieIoError) Unwrap() error { return e.cause }
-
 // HTTPCookieStoreError is an error of category store (E-7).
 type HTTPCookieStoreError struct{ failure }
 
@@ -460,9 +491,6 @@ func (e *HTTPCookieStoreError) Status() (int, bool) { return e.status, e.hasStat
 
 // Errno is the OS error number of an I/O failure, when there is one (B-4).
 func (e *HTTPCookieStoreError) Errno() (int, bool) { return e.errno, e.hasErrno }
-
-// Unwrap is the error of a callback that the failure carries, or nil (E-7).
-func (e *HTTPCookieStoreError) Unwrap() error { return e.cause }
 
 // HTTPCookieBusyError is an error of category busy (E-7).
 type HTTPCookieBusyError struct{ failure }
@@ -479,9 +507,6 @@ func (e *HTTPCookieBusyError) Status() (int, bool) { return e.status, e.hasStatu
 // Errno is the OS error number of an I/O failure, when there is one (B-4).
 func (e *HTTPCookieBusyError) Errno() (int, bool) { return e.errno, e.hasErrno }
 
-// Unwrap is the error of a callback that the failure carries, or nil (E-7).
-func (e *HTTPCookieBusyError) Unwrap() error { return e.cause }
-
 // HTTPCookieInternalError is an error of category internal (E-7).
 type HTTPCookieInternalError struct{ failure }
 
@@ -496,6 +521,3 @@ func (e *HTTPCookieInternalError) Status() (int, bool) { return e.status, e.hasS
 
 // Errno is the OS error number of an I/O failure, when there is one (B-4).
 func (e *HTTPCookieInternalError) Errno() (int, bool) { return e.errno, e.hasErrno }
-
-// Unwrap is the error of a callback that the failure carries, or nil (E-7).
-func (e *HTTPCookieInternalError) Unwrap() error { return e.cause }

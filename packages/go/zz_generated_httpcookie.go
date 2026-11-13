@@ -31,7 +31,7 @@ const MaxNameAndValue uint64 = 4096
 // MaxPath is the constant polyspec_http_cookie::MAX_PATH of the core (U-5).
 const MaxPath uint64 = 1024
 
-// ParseCookie calls the core function polyspec_http_cookie::parse_cookie (contract member parse_cookie).
+// ParseCookie calls polyspec_http_cookie::parse_cookie (contract member parse_cookie).
 func ParseCookie(lines []string) ([][2]string, error) {
 	var zero0 [][2]string
 	enc := binding.NewWriter()
@@ -56,7 +56,7 @@ func ParseCookie(lines []string) ([][2]string, error) {
 	return value0, nil
 }
 
-// SetCookie calls the core function polyspec_http_cookie::set_cookie (contract member set_cookie).
+// SetCookie calls polyspec_http_cookie::set_cookie (contract member set_cookie).
 func SetCookie(name string, value_ string, attributes Attributes) (string, error) {
 	var zero0 string
 	enc := binding.NewWriter()
