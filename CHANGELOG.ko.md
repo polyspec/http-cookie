@@ -1,5 +1,9 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: 344d045b32f34a8edbed5583d4fe9f6f7d9bb4097a20b497bcadbed3ca82a6a3 -->
+<!-- source-sha256: 90144d6748b6a3597676f1c711d942deeccf612dd4cb3eaa6ccf8e4e0b734f1b -->
+
+- `make test-php`와 `make lint-bindings`가 인자 없이 PHP를 찾는다. `PHP`와 `PHP_CONFIG`의 기본값은 `command -v`가
+  주는 경로다. 전에는 기본값이 이름 `php`뿐이었고, ext-php-rs는 그것을 파일의 경로로 읽어
+  "php executable not found at php"로 실패했다.
 
 - 추적되는 모든 문서가 한국어 번역과 쌍의 marker를 가진다. `AGENTS.ko.md`와
   `docs/spec/cookies.ko.md`를 새로 두었고, 모든 문서는 자신의 `doc-id`로 시작하며, 한국어 파일은 자신의 영어 파일의
