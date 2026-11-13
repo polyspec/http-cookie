@@ -1,3 +1,4 @@
+<!-- doc-id: readme -->
 # http-cookie
 
 [한국어](README.ko.md)

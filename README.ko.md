@@ -1,9 +1,11 @@
+<!-- doc-id: readme -->
+<!-- source-sha256: cd0ab49be826904996f25b8ea456c27789baa1ff36f775adc9db662b7c0d2e64 -->
 # http-cookie
 
 [English](README.md)
 
 요청의 `Cookie` 필드 줄에서 쿠키를 읽고, `Set-Cookie` 필드 줄 하나의 필드 값을 쓴다. 구현은 Rust 하나이고 두 연산
-모두 순수 함수다. 규칙은 [docs/spec/cookies.md](docs/spec/cookies.md)에, 모든 구현이 통과하는 case는
+모두 순수 함수다. 규칙은 [docs/spec/cookies.ko.md](docs/spec/cookies.ko.md)에, 모든 구현이 통과하는 case는
 [contracts/cookies.json](contracts/cookies.json)에 있다.
 
 - 읽기(CK-2~CK-5): 줄을 `;`에서 쌍으로 나누고, 쌍 양끝의 스페이스와 탭을 빼고, 쌍을 첫 `=`에서 나누고, 값을

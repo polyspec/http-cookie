@@ -1,3 +1,8 @@
+<!-- doc-id: changelog -->
+
+- Every tracked document has its Korean translation and the markers of its pair: `AGENTS.ko.md` and
+  `docs/spec/cookies.ko.md` are new, each document starts with its `doc-id`, and each Korean file states the sha256 of
+  its English file (`source-sha256`). `AGENTS.md` states the rule.
 
 - `composer.lock` is tracked, so `composer install` installs the PHPUnit that runs the tests of the PHP extension at one
   pinned version.

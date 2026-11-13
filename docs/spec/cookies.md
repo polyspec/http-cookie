@@ -1,3 +1,4 @@
+<!-- doc-id: spec-cookies -->
 # http-cookie: rules
 
 This document is the specification of http-cookie. A rule is a list item `**CK-n**`; a statement of a rule has the

@@ -1,3 +1,4 @@
+<!-- doc-id: agents -->
 # AGENTS.md
 
 Rules for every change of http-cookie. The rules of the library are in [docs/spec/cookies.md](docs/spec/cookies.md).
@@ -60,6 +61,11 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
 - An invalid argument fails with a kind; the library never turns it into a plausible value.
 - The specification, the cases, the README, this file and the change log (English and Korean) change in the same
   change as the code.
+- Every tracked document is an English file `X.md` and its Korean translation `X.ko.md`, which say the same sentence
+  by sentence, so that a reader of either language reads the same rules. Both start with the same line
+  `<!-- doc-id: <name> -->`, and the second line of the Korean file is `<!-- source-sha256: <hash> -->` with the sha256
+  of the English file (`shasum -a 256`). A change of one file changes the other and writes the hash again. No make
+  target checks the pairs.
 
 ## Rust
 
