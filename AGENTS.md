@@ -27,11 +27,13 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
 - `polyspec-binding-core` is a Git dependency of the core and of the binding crates (branch `v1/rust-core` of the
   binding repository) until binding is released; `Cargo.lock` pins its commit. The core implements
   `binding_core::Kinds` for its error (CK-13.2, CK-13.3).
-- binding itself is the TypeScript tool of the same repository, which no registry holds yet. `scripts/binding.mts`
-  takes it from the checkout that Cargo made of the commit that `Cargo.lock` pins, copies it into
-  `var/binding/<commit>` and installs its dependencies there by its `package-lock.json`, so that the generator and
-  `binding_core` are one version. This is not the usual installation of a tool and holds only until the first release
-  of binding: after it, binding is an npm package that `package-lock.json` pins, and the script goes.
+- binding itself is the TypeScript tool of the same repository, which no registry holds yet. `scripts/binding.mts` takes
+  it from the checkout that Cargo made of the commit that `Cargo.lock` pins, clones it into `var/binding/<commit>` and
+  installs its dependencies there by its `package-lock.json`, so that the generator and `binding_core` are one version.
+  The clone is a Git checkout of binding at that commit: binding check reads its own commit from it and compares it with
+  the commit of `Cargo.lock` (CK-20), which a copy of the files alone fails. This is not the usual installation of a
+  tool and holds only until the first release of binding: after it, binding is an npm package that `package-lock.json`
+  pins, and the script goes.
 - `make bindings` generates; every make target that builds or tests a binding runs it first. `make test-bindings` runs
   clippy on the whole workspace, `make check-declarations` (`tsc --noEmit --strict` on the generated `index.d.ts`),
   then `make test-python` (a wheel built by maturin and installed into `var/venv`),
