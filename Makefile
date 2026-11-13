@@ -14,6 +14,9 @@ PHPUNIT ?= vendor/bin/phpunit
 MATURIN := maturin==1.16.0
 # ext-php-rs reads them when it builds the extension.
 export PHP PHP_CONFIG
+# The file name extension of a library that Cargo builds as a cdylib: dylib on macOS, so on Linux (AGENTS.md,
+# "Platforms").
+CDYLIB := $(if $(filter Darwin,$(shell uname -s)),dylib,so)
 
 .PHONY: check test lint-rust fmt-check binding-check bindings test-bindings lint-bindings test-python test-node test-php \
 	check-declarations
@@ -69,7 +72,7 @@ NODE_ADDON := http-cookie.$(PLATFORM).node
 test-node: bindings
 	$(CARGO) build $(CARGOFLAGS) -p $(CORE)-node --locked --features panic-test
 	rm -rf $(VAR)/node $(VAR)/node-platform && mkdir -p $(VAR)/node $(VAR)/node-platform
-	cp $(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookie_node.so $(VAR)/node-platform/$(NODE_ADDON)
+	cp $(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookie_node.$(CDYLIB) $(VAR)/node-platform/$(NODE_ADDON)
 	node -e 'const p = require("./packages/ts/package.json"); require("fs").writeFileSync("$(VAR)/node-platform/package.json", JSON.stringify({ name: p.name + "-$(PLATFORM)", version: p.version, os: [process.platform], cpu: [process.arch], main: "$(NODE_ADDON)", files: ["$(NODE_ADDON)"] }, null, 2) + "\n")'
 	cd $(VAR)/node-platform && npm pack --pack-destination $(VAR)/node
 	cd packages/ts && npm pack --pack-destination $(VAR)/node
@@ -83,5 +86,5 @@ test-node: bindings
 test-php: bindings
 	$(CARGO) build $(CARGOFLAGS) -p $(CORE)-php-ext --locked --features panic-test
 	$(PHP) -l packages/php-ext/generated/polyspec_http_cookie.stub.php
-	$(PHP) -d extension=$(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookie.so $(PHPUNIT) packages/php-ext/generated/tests
-	HTTP_COOKIE_CASES=$(CASES) $(PHP) -d extension=$(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookie.so $(PHPUNIT) packages/php-ext/tests
+	$(PHP) -d extension=$(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookie.$(CDYLIB) $(PHPUNIT) packages/php-ext/generated/tests
+	HTTP_COOKIE_CASES=$(CASES) $(PHP) -d extension=$(CARGO_TARGET_DIR)/debug/libpolyspec_http_cookie.$(CDYLIB) $(PHPUNIT) packages/php-ext/tests

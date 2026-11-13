@@ -35,12 +35,14 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
   tool and holds only until the first release of binding: after it, binding is an npm package that `package-lock.json`
   pins, and the script goes.
 - `make bindings` generates; every make target that builds or tests a binding runs it first. `make test-bindings` runs
-  clippy on the whole workspace, `make check-declarations` (`tsc --noEmit --strict` on the generated `index.d.ts`),
-  then `make test-python` (a wheel built by maturin and installed into `var/venv`),
-  `make test-node` (the addon beside the generated entry, the package packed and installed into `var/node`) and `make
-  test-php` (the extension built against `PHP_CONFIG` and loaded into `PHP`, the tests on `PHPUNIT`). Each runs the
-  tests that binding generates and the contract cases. The variables `PYTHON` (3.14 or later), `PHP` (8.4 or later),
-  `PHP_CONFIG` and `PHPUNIT` name the runtimes; `CARGOFLAGS` adds arguments to every cargo build.
+  clippy on the whole workspace, `make check-declarations` (`tsc --noEmit --strict` on the generated `index.d.ts`), then
+  `make test-python` (a wheel built by maturin and installed into `var/venv`), `make test-node` (the addon beside the
+  generated entry, the package packed and installed into `var/node`) and `make test-php` (the extension built against
+  `PHP_CONFIG` and loaded into `PHP`, the tests on `PHPUNIT`). Each runs the tests that binding generates and the
+  contract cases. The variables `PYTHON` (3.14 or later), `PHP` (8.4 or later), `PHP_CONFIG` and `PHPUNIT` name the
+  runtimes; `CARGOFLAGS` adds arguments to every cargo build. On macOS a PHP extension and a Node addon take the symbols
+  of their runtime when it loads them, so `.cargo/config.toml` tells the linker to leave them undefined, and the recipes
+  name the library that Cargo builds by the extension of the platform (`dylib` on macOS, `so` on Linux).
 - The development tools are dependencies of the repository: TypeScript in `package.json`, pinned by
   `package-lock.json`, and PHPUnit in `require-dev` of `composer.json`, installed into `vendor/` (the default of
   `PHPUNIT`). `composer.lock` is not tracked yet, so PHPUnit is not pinned: the lock is written by `composer update`
