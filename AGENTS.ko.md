@@ -1,5 +1,5 @@
 <!-- doc-id: agents -->
-<!-- source-sha256: 38eb8b77e0de55e22c9f273a51307b7866ac0be67963ee33ae1e8db6ea4eec33 -->
+<!-- source-sha256: 011fa9b9dc232b10c532f4b16a146298c54737ec856d990705d9ca3c4def68b7 -->
 # AGENTS.md
 
 http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 규칙은 [docs/spec/cookies.ko.md](docs/spec/cookies.ko.md)에 있다.
@@ -24,7 +24,7 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
 - `contracts/cookies.json`: 규칙의 case(CK-14).
 - `scripts/binding.mts`: binding을 실행한다("바인딩" 절을 본다).
 - `docs/spec/`: 명세. 루트: `AGENTS.md`, `README.md`, `CHANGELOG.md`와 그 한국어 번역
-  (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`, `.cargo/config.toml`, 그리고
+  (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`, 그리고
   개발 도구의 `package.json`, `package-lock.json`, `composer.json`, `composer.lock`, 그리고 checkout의 도구의
   `mise.toml`, `mise.lock`, `config/toolchain.json`, `.php-version`, `.npmrc`, `.mise/locks/`("바인딩" 절을 본다).
 - 바인딩 옆에 지우거나 남겨 둘 다른 언어의 구현은 없다.
@@ -62,8 +62,9 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
   `GOTOOLCHAIN=local`로 실행한다. `make test-wasm`은 `packages/ts/wasm/Cargo.toml`의 `wasm-bindgen` crate와 다른 판의
   wasm-bindgen CLI를 실패시킨다. 그 CLI는 자기 판의 모듈만 읽기 때문이다(binding GN-18). `CARGOFLAGS`는 모든 cargo build에
   인자를 더한다. macOS에서 PHP 확장과 Node addon은 자기 런타임이 그것을 로드할 때 런타임의 기호를
-  받는다. 그래서 `.cargo/config.toml`이 링커에게 그 기호를 정의하지 않은 채 두게 하고, recipe는 Cargo가 만든
-  라이브러리를 플랫폼의 확장자(macOS `dylib`, Linux `so`)로 가리킨다.
+  받는다. 그래서 링커는 그 기호를 정의하지 않은 채 두어야 한다. binding scaffold가 두 crate마다 쓰는 `build.rs`가 자기
+  라이브러리에만 그렇게 지시하고(binding GN-3d), 추적되는 어떤 파일도 `RUSTFLAGS`나 `.cargo/config.toml`로 링크 설정을
+  주지 않는다. recipe는 Cargo가 만든 라이브러리를 플랫폼의 확장자(macOS `dylib`, Linux `so`)로 가리킨다.
 - 도구는 추적되는 파일에 고정되고, binding처럼 checkout의 `var/tools`에 설치된다. `mise.toml`은 Node.js, npm, Go,
   Python, Composer, wasm-bindgen CLI를 binding의 판으로 적고 `mise.lock`은 그 digest를 적는다. `config/toolchain.json`은
   mise의 판과 digest를, `rust-toolchain.toml`은 target `wasm32-unknown-unknown`을 가진 Rust toolchain을, `.php-version`은

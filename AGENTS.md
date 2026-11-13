@@ -23,7 +23,7 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
 - `contracts/cookies.json`: the cases of the rules (CK-14).
 - `scripts/binding.mts`: runs binding (see "Bindings").
 - `docs/spec/`: the specification. Root: `AGENTS.md`, `README.md`, `CHANGELOG.md` and their Korean translations
-  (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`, `.cargo/config.toml`, and
+  (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`, and
   `package.json`, `package-lock.json`, `composer.json` and `composer.lock` of the development tools, and `mise.toml`,
   `mise.lock`, `config/toolchain.json`, `.php-version`, `.npmrc` and `.mise/locks/` of the tools of the checkout (see
   "Bindings").
@@ -64,8 +64,10 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
   than the `wasm-bindgen` crate of `packages/ts/wasm/Cargo.toml`, because the CLI reads only a module of its own
   release (binding GN-18). `CARGOFLAGS` adds
   arguments to every cargo build. On macOS a PHP extension and a Node addon take the symbols of their runtime when it
-  loads them, so `.cargo/config.toml` tells the linker to leave them undefined, and the recipes name the library that
-  Cargo builds by the extension of the platform (`dylib` on macOS, `so` on Linux).
+  loads them, so the linker must leave them undefined: the `build.rs` that binding scaffold writes for each of the two
+  crates says so for its library alone (binding GN-3d), and no tracked file gives a link setting in `RUSTFLAGS` or
+  `.cargo/config.toml`. The recipes name the library that Cargo builds by the extension of the platform (`dylib` on
+  macOS, `so` on Linux).
 - The tools are pinned in tracked files and installed into `var/tools` of the checkout, as in binding: `mise.toml`
   names Node.js, npm, Go, Python, Composer and the wasm-bindgen CLI at the releases of binding and `mise.lock` their
   digests, `config/toolchain.json` the release of mise and its digests, `rust-toolchain.toml` the Rust toolchain with
