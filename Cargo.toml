@@ -5,11 +5,13 @@ resolver = "2"
 members = ["packages/rust", "packages/python", "packages/ts", "packages/ts/wasm", "packages/php-ext", "packages/go/internal/ffi"]
 
 # Every warning fails, no unsafe code, no unwrap or expect, no discarded result, and every allow attribute names its
-# rule; clippy.toml disallows the methods that turn an Err or a None into a value. The binding crates carry the same
-# lints themselves, with unsafe_code deny instead of forbid (binding GN-4).
+# rule; clippy.toml disallows the methods that turn an Err or a None into a value. The binding crates take this table
+# (lints.workspace = true), so it denies unsafe_code and does not forbid it: the macros of ext-php-rs, napi-rs, PyO3 and
+# wasm-bindgen expand to unsafe code, each unsafe block of the generated code carries an allow with its reason, and no
+# attribute lifts a forbid (binding GN-4).
 [workspace.lints.rust]
 warnings = "deny"
-unsafe_code = "forbid"
+unsafe_code = "deny"
 unused_must_use = "deny"
 
 [workspace.lints.clippy]

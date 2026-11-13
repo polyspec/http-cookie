@@ -1,7 +1,13 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: aa094e145920c4147f95968551d29c26b3b92cf69419daeafeae6a6b8c889f48 -->
+<!-- source-sha256: d6e85bebf4399af3eb1a61589765e5f7a32c9b24c1805d78cbaabf02d1d28759 -->
 
 ## Unreleased
+
+- workspace의 lint는 `unsafe_code`를 deny하고 더 이상 forbid하지 않는다. binding scaffold가 쓰는 바인딩 crate는
+  workspace의 lint를 받고(binding GN-4), 생성된 코드는 unsafe block마다 이유와 함께 `unsafe_code`를 allow하는데,
+  forbid는 그 allow를 거부한다. 그래서 Python, Node, PHP, WASM, Go 바인딩 crate의 `cargo clippy`가 E0453
+  "allow(unsafe_code) incompatible with previous forbid"로 실패했다. 코어에는 unsafe 코드도 그 allow도 없으므로
+  `make lint-rust`는 전과 같이 통과한다.
 
 - `Cargo.lock`은 `polyspec-binding-core`를 binding의 branch `v1/rust-core`의 head에 pin하고, 바인딩 package는 그
   binding의 scaffold가 쓰는 것과 같다. 그래서 `make bindings-check`는 finding을 보고하지 않는다. 전에는 lock(CK-20),

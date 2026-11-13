@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- The lints of the workspace deny `unsafe_code` and no longer forbid it. The binding crates that binding scaffold
+  writes take the lints of the workspace (binding GN-4), and their generated code allows `unsafe_code` for each unsafe
+  block with its reason, which a forbid refuses: `cargo clippy` of the Python, Node, PHP, WASM and Go binding crates
+  failed with E0453, "allow(unsafe_code) incompatible with previous forbid". The core has no unsafe code and no allow
+  of it, so `make lint-rust` passes as before.
+
 - `Cargo.lock` pins `polyspec-binding-core` at the head of the branch `v1/rust-core` of binding, and the binding
   packages are the ones that binding scaffold of that binding writes, so `make bindings-check` reports no finding.
   Before, it reported the lock (CK-20), the core without a licence (CK-71) and four files (CK-19). The core
