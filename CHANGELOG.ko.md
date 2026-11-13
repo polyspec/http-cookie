@@ -1,5 +1,5 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: 203e33221914693ba2cb3b61e5b5ee48a605d1c7b16a03d7afbc1f2b26313bda -->
+<!-- source-sha256: 528009724172fedd15eb0ae175ff644d9b07307b60ec77c0492d78035acf098b -->
 
 ## Unreleased
 
@@ -93,7 +93,7 @@
   그 파일을 더는 복사하지 않는다. `binding check`는 자기 Git checkout에서 자기 커밋을 읽어 `Cargo.lock`의
   커밋과 비교한다(CK-20). 파일 복사본에서는 커밋을 찾지 못했고 `make binding-check`가 실패했다.
 
-- `Cargo.lock`은 같은 라이브러리 묶음의 모든 레포가 고정하는 커밋인 binding 9de9d03을 고정하고(CK-20),
+- `Cargo.lock`은 같은 라이브러리 묶음의 모든 레포가 고정하는 binding commit을 고정하고(CK-20),
   바인딩 패키지는 그 scaffold가 쓰는 것이다. Node 패키지는 addon을 담지 않고 플랫폼 패키지마다 optional dependency
   하나를 가진다. `make test-node`는 이 기계의 플랫폼 패키지를 릴리스가 하듯이 pack하고 두 패키지를
   설치한다.
