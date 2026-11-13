@@ -25,6 +25,255 @@ func TestB8ParseCookieRefusesLinesAboveU00FF(t *testing.T) {
 	}
 }
 
+func TestGN13eParseCookie(t *testing.T) {
+	t.Run("two_pairs_give_two_cookies", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=1; b=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("pairs_without_a_space_split_at_the_semicolon", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=1;b=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("spaces_and_tabs_at_the_start_of_a_pair_are_removed", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{" \u0009a=1"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("spaces_and_tabs_at_the_end_of_a_pair_are_removed", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=1 \u0009; b=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("spaces_inside_a_pair_are_kept", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a = 1"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("only_spaces_and_tabs_are_removed", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"\u000ba=1; \u000d\u000ab=2\u000b"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("the_first_cookie_of_a_name_counts", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=1; a=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("the_order_is_the_order_of_first_occurrence", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"b=1; a=2; b=3; c=4"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_pair_without_an_equals_sign_gives_no_cookie", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a; b=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_pair_with_an_empty_name_gives_no_cookie", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"=1; b=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_lone_equals_sign_gives_no_cookie", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"=; b=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_pair_splits_at_its_first_equals_sign", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=x=y; b=="})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("an_empty_value_is_a_cookie", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a="})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("the_value_is_percent_decoded_and_a_plus_is_kept", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=%41%2b+"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("hexadecimal_digits_of_either_case_decode", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=%c3%A9; b=%C3%a9"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_percent_without_two_hexadecimal_digits_is_itself", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=%4; b=%zz; c=%; d=x%; e=%4g; f=% 41"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_decoded_percent_is_not_decoded_again", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=%2541"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("encoded_separators_are_bytes_of_the_value", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=%3B%3D%20%22"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_decoded_nul_is_a_character", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=%00"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("the_name_is_not_decoded", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"%61=1"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("dots_spaces_and_brackets_of_a_name_are_kept", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a.b=1; a b=2; a[x]=3; a[]=4"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_decimal_name_is_text", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"1=a; 2=b"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_value_that_is_not_utf8_gives_no_cookie_and_a_later_pair_counts", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=%FF; a=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_raw_byte_that_is_not_utf8_gives_no_cookie", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=\u0080; b=\u00a0"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("an_overlong_and_a_surrogate_encoding_give_no_cookie", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=%C0%AF; b=%ED%A0%80; c=1"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_name_that_is_not_utf8_gives_no_cookie", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"\u00ff=1; b=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_name_that_is_not_utf8_does_not_hide_a_later_pair", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"\u00ff=1; \u00ff=2; a=3"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("the_utf8_bytes_of_a_value_are_its_text", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=\u00c3\u00a9; b=%C3%A9"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("the_utf8_bytes_of_a_name_are_its_text", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"\u00c3\u00a9=1"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_comma_is_part_of_a_value", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=1, b=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("quotes_are_part_of_a_value", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=\"q\""})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("empty_pairs_give_no_cookie", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{";; a=1;"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_pair_of_spaces_gives_no_cookie", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{" \u0009 ; a=1"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("an_empty_line_gives_no_cookies", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{""})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("no_line_gives_no_cookies", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_leading_bom_of_a_value_is_kept", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=%EF%BB%BFx"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("lines_are_read_in_order", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=1", "b=2; c=3"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("the_first_cookie_of_a_name_counts_across_lines", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=1", "a=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_pair_does_not_cross_the_end_of_a_line", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a", "=1", "b=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("the_end_of_a_line_ends_a_pair_with_its_spaces", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"a=1 ", "\u0009b=2"})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("empty_lines_give_no_cookies", func(t *testing.T) {
+		_, err := httpcookie.ParseCookie([]string{"", "a=1", ""})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+}
+
 func TestB3SetCookieRefusesNameThatIsNotUTF8(t *testing.T) {
 	_, err := httpcookie.SetCookie("\xff", "a", httpcookie.Attributes{Path: "a", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
 	var failure *liberrors.HTTPCookieValueError
@@ -55,6 +304,147 @@ func TestT6SetCookieRefusesAttributesSameSiteThatIsNoConstant(t *testing.T) {
 	if !errors.As(err, &failure) || failure.Kind() != "invalid_argument_type" {
 		t.Fatalf("T-6: %#v", err)
 	}
+}
+
+func TestGN13eSetCookie(t *testing.T) {
+	t.Run("a_cookie_is_written_with_its_attributes", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("session", "v", httpcookie.Attributes{Path: "/", MaxAge: ptr(uint64(60)), Secure: false, HttpOnly: true, SameSite: ptr(httpcookie.SameSiteLax)})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_secure_cookie_has_secure_before_httponly", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("session", "v", httpcookie.Attributes{Path: "/", MaxAge: ptr(uint64(60)), Secure: true, HttpOnly: true, SameSite: ptr(httpcookie.SameSiteLax)})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("an_absent_max_age_writes_none", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "b", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: false, HttpOnly: true, SameSite: ptr(httpcookie.SameSiteLax)})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("only_the_path_is_always_written", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "b", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_removed_cookie_has_an_empty_value_and_max_age_zero", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("session", "", httpcookie.Attributes{Path: "/", MaxAge: ptr(uint64(0)), Secure: false, HttpOnly: true, SameSite: ptr(httpcookie.SameSiteLax)})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("the_largest_safe_max_age_is_written", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "b", httpcookie.Attributes{Path: "/", MaxAge: ptr(uint64(9007199254740991)), Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_max_age_above_400_days_is_written", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "b", httpcookie.Attributes{Path: "/", MaxAge: ptr(uint64(34560001)), Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("same_site_strict_is_written", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "b", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: ptr(httpcookie.SameSiteStrict)})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("same_site_none_with_secure_is_written", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "b", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: true, HttpOnly: false, SameSite: ptr(httpcookie.SameSiteNone)})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_path_is_written_as_given", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "b", httpcookie.Attributes{Path: "/a b/c", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_host_session_cookie", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("__Host-hy-session", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: true, HttpOnly: true, SameSite: ptr(httpcookie.SameSiteLax)})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("the_cookie_octets_are_written_as_they_are", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "!#$&'()*+-./09:<=>?@AZ[]^_`az{|}~", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_percent_is_encoded", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "%41", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("separators_of_a_value_are_encoded", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", " \",;\\", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("control_characters_are_encoded", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "\u0000\u0009\u000a\u007f", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("non_ascii_is_encoded_as_utf8_bytes", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "\u00e9\ufeff\U0001f600", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_plus_is_written_as_it_is", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "1+1", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("every_token_character_is_a_name", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("!#$%&'*+-.^_`|~09AZaz", "v", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_path_of_1024_characters_is_written", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "b", httpcookie.Attributes{Path: "/ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_name_and_value_of_4096_bytes_are_written", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("the_size_counts_the_written_value", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("a", "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ", httpcookie.Attributes{Path: "/", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_secure_prefixed_cookie_may_have_any_path", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("__Secure-a", "b", httpcookie.Attributes{Path: "/a", MaxAge: nil, Secure: true, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
+	t.Run("a_name_like_a_prefix_is_no_prefix", func(t *testing.T) {
+		_, err := httpcookie.SetCookie("_Host-a", "b", httpcookie.Attributes{Path: "/a", MaxAge: nil, Secure: false, HttpOnly: false, SameSite: nil})
+		if err != nil {
+			t.Fatalf("GN-13e: %v", err)
+		}
+	})
 }
 
 func TestB4SetCookie(t *testing.T) {
