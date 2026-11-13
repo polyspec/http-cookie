@@ -16,8 +16,10 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
   that `binding scaffold` writes and that is tracked: `Cargo.toml`, `src/lib.rs`, which includes `generated/lib.rs`,
   the `build.rs` of the Node addon, and the manifest of the language (`pyproject.toml`, `package.json`,
   `composer.json`, `go.mod`). They are not edited by hand; `make binding-check` fails when they differ from what binding
-  writes. `generated/` of each is written by `make
-  bindings` and is not tracked. `tests/` of each holds the runner of the contract cases in that language (CK-14.5).
+  writes. `generated/` of each (`packages/go/internal/ffi/generated` and `packages/ts/wasm/generated` included) is
+  written by `make bindings` and is not tracked. In the Go module binding owns the files `zz_generated_*.go` instead of
+  a directory, and they are tracked (binding GN-3), because `go get` takes a module from its tracked files; `make
+  bindings` writes them again. `tests/` of each holds the runner of the contract cases in that language (CK-14.5).
 - `contracts/cookies.json`: the cases of the rules (CK-14).
 - `scripts/binding.mts`: runs binding (see "Bindings").
 - `docs/spec/`: the specification. Root: `AGENTS.md`, `README.md`, `CHANGELOG.md` and their Korean translations

@@ -1,5 +1,13 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: e3c54036e3506013798c9d85d8e96b86c3b4a35178194085a5268b7ac2a8526f -->
+<!-- source-sha256: 15f6e654a687e3414c19445476a98ad1569d7336fe9f72da48fb2943e3b55cac -->
+
+- binding이 생성하는 Go 파일을 추적하고 Go와 WASM의 다른 생성 디렉터리는 무시한다: `packages/go/zz_generated_*.go`,
+  `packages/go/errors/`, `packages/go/internal/binding/`에는 `make bindings`가 쓰는 `zz_generated_*.go` 파일이 있고,
+  binding은 Go 모듈에서 이 파일들을 소유하며 이 파일들은 추적된다(binding GN-3). `go get`이 모듈을 추적된 파일에서
+  받게 하기 위해서다. `.gitignore`는 `packages/go/internal/ffi/generated/`와 `packages/ts/wasm/generated/`를 적는다.
+  전에는 `make bindings`가 이 파일과 디렉터리를 추적되지도 무시되지도 않은 채 남겼다. binding의 end-to-end check
+  (`BD-27`을 합친 commit에서 binding의 `make e2e`)는 계약의 다섯 target을 각 runner에서 돌려 모두 통과한다: PHP는
+  PHPUnit, Python은 unittest, Node와 WASM은 `node --test`, Go는 `go test`이고, 건너뛴 시험은 없다.
 
 - 계약이 binding의 다섯 target을 적는다(BD-27): `packages/rust/interface.json`의 `targets`는 php, python, node,
   go, wasm이고, `packages.go`는 Go 모듈 `github.com/polyspec/http-cookie/packages/go`를 적으며, npm 패키지의 entry

@@ -1,5 +1,14 @@
 <!-- doc-id: changelog -->
 
+- The Go files that binding generates are tracked and the other generated directories of Go and WASM are ignored:
+  `packages/go/zz_generated_*.go`, `packages/go/errors/` and `packages/go/internal/binding/` hold the files
+  `zz_generated_*.go` that `make bindings` writes, which binding owns in the Go module and which are tracked (binding
+  GN-3), so that `go get` takes the module from its tracked files. `.gitignore` names
+  `packages/go/internal/ffi/generated/` and `packages/ts/wasm/generated/`. Before, `make bindings` left these files and
+  directories untracked and not ignored. The end-to-end check of binding (`make e2e` of binding at the merged commit
+  of `BD-27`) runs the five targets of the contract on their runners and passes each: PHP on PHPUnit, Python on
+  unittest, Node and WASM on `node --test`, Go on `go test`, with no skipped test.
+
 - The contract names the five targets of binding (BD-27): `targets` of `packages/rust/interface.json` is php, python,
   node, go and wasm, `packages.go` names the Go module `github.com/polyspec/http-cookie/packages/go`, the entry `.` of
   the npm package takes the conditions `{node: napi, browser: wasm}`, each error class names its WASM class, the Node

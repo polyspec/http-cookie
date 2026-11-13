@@ -1,5 +1,5 @@
 <!-- doc-id: agents -->
-<!-- source-sha256: 366aaf5ceb52b295a2fbccf2c7bdd43c7ceb2ed4c91a42429d8970190917d063 -->
+<!-- source-sha256: 2d827ae5302fb828c4be8f5f2569cc06805d1bcd53241cf886bfb1aa1d56586c -->
 # AGENTS.md
 
 http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 규칙은 [docs/spec/cookies.ko.md](docs/spec/cookies.ko.md)에 있다.
@@ -17,8 +17,10 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
   쓰는 얇은 패키지이고 추적된다: `Cargo.toml`, `generated/lib.rs`를 include하는 `src/lib.rs`,
   Node addon의 `build.rs`, 그 언어의 manifest(`pyproject.toml`, `package.json`,
   `composer.json`, `go.mod`). 이 파일들은 손으로 고치지 않는다. binding이 쓰는 것과 다르면
-  `make binding-check`가 실패한다. 각 바인딩의 `generated/`는 `make bindings`가 쓰고
-  추적되지 않는다. 각 바인딩의 `tests/`는 그 언어로 contract case를 돌리는 runner를 담는다(CK-14.5).
+  `make binding-check`가 실패한다. 각 바인딩의 `generated/`(`packages/go/internal/ffi/generated`와
+  `packages/ts/wasm/generated` 포함)는 `make bindings`가 쓰고 추적되지 않는다. Go 모듈에서 binding은 디렉터리 대신
+  `zz_generated_*.go` 파일을 소유하고, 이 파일들은 추적된다(binding GN-3). `go get`은 모듈을 추적된 파일에서 받기
+  때문이다. `make bindings`가 이 파일들을 다시 쓴다. 각 바인딩의 `tests/`는 그 언어로 contract case를 돌리는 runner를 담는다(CK-14.5).
 - `contracts/cookies.json`: 규칙의 case(CK-14).
 - `scripts/binding.mts`: binding을 실행한다("바인딩" 절을 본다).
 - `docs/spec/`: 명세. 루트: `AGENTS.md`, `README.md`, `CHANGELOG.md`와 그 한국어 번역
