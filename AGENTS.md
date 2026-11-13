@@ -18,8 +18,8 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
 - `contracts/cookies.json`: the cases of the rules (CK-14).
 - `scripts/binding.mts`: runs binding (see "Bindings").
 - `docs/spec/`: the specification. Root: `AGENTS.md`, `README.md`, `CHANGELOG.md` and their Korean translations
-  (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`, and `package.json`,
-  `package-lock.json` and `composer.json` of the development tools.
+  (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`, `.cargo/config.toml`, and
+  `package.json`, `package-lock.json`, `composer.json` and `composer.lock` of the development tools.
 - There is no implementation in another language to remove or to keep beside the bindings.
 
 ## Bindings
@@ -45,8 +45,7 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
   name the library that Cargo builds by the extension of the platform (`dylib` on macOS, `so` on Linux).
 - The development tools are dependencies of the repository: TypeScript in `package.json`, pinned by
   `package-lock.json`, and PHPUnit in `require-dev` of `composer.json`, installed into `vendor/` (the default of
-  `PHPUNIT`). `composer.lock` is not tracked yet, so PHPUnit is not pinned: the lock is written by `composer update`
-  on a machine that reaches Packagist and is then tracked.
+  `PHPUNIT`). `composer.lock` pins PHPUnit and its dependencies, and `composer install` installs them.
 
 ## Changes
 
