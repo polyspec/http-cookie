@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "The http-cookie library of polyspec for Node and the browser",
   "license": "MIT",
+  "type": "module",
   "main": "./generated/index.cjs",
   "types": "./generated/index.d.ts",
   "exports": {
@@ -29,9 +30,12 @@
     "wasm/generated/*.d.ts",
     "wasm/generated/*.wasm"
   ],
-  "optionalDependencies": {
-    "@polyspec/http-cookie-linux-x64-gnu": "0.0.0",
-    "@polyspec/http-cookie-linux-arm64-gnu": "0.0.0",
-    "@polyspec/http-cookie-darwin-arm64": "0.0.0"
+  "napi": {
+    "binaryName": "http-cookie",
+    "targets": [
+      "x86_64-unknown-linux-gnu",
+      "aarch64-unknown-linux-gnu",
+      "aarch64-apple-darwin"
+    ]
   }
 }

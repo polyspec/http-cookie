@@ -1,5 +1,5 @@
 <!-- doc-id: agents -->
-<!-- source-sha256: c2620e9e92a0dbf2dce10406ab16544e686e94d0e5cfac3b65c0d2213ddf8a15 -->
+<!-- source-sha256: 608b669bc41eaa6ce61237a9f7578fbd62c66f1d38383d81ec51e536d96e0c3a -->
 # AGENTS.md
 
 http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 규칙은 [docs/spec/cookies.ko.md](docs/spec/cookies.ko.md)에 있다.
@@ -19,8 +19,8 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
   `composer.json`, `go.mod`). 이 파일들은 손으로 고치지 않는다. binding이 쓰는 것과 다르면
   `make bindings-check`가 실패한다. 각 바인딩의 `generated/`(`packages/go/internal/ffi/generated`와
   `packages/ts/wasm/generated` 포함)는 `make bindings`가 쓰고 추적되지 않는다. Go 모듈에서 binding은 디렉터리 대신
-  `zz_generated_*.go` 파일을 소유하고, 이 파일들은 추적된다(binding GN-3). `go get`은 모듈을 추적된 파일에서 받기
-  때문이다. `make bindings`가 이 파일들을 다시 쓴다. 각 바인딩의 `tests/`는 그 언어로 contract case를 돌리는 runner를 담는다(CK-14.5).
+  `zz_generated_*.go` 파일을 소유한다(binding GN-3). `make bindings`가 이 파일들을 쓰고, 이 파일들도 추적되지
+  않는다("바인딩" 절을 본다). 각 바인딩의 `tests/`는 그 언어로 contract case를 돌리는 runner를 담는다(CK-14.5).
 - `contracts/cookies.json`: 규칙의 case(CK-14).
 - `scripts/binding.mts`: binding을 실행한다("바인딩" 절을 본다).
 - `docs/spec/`: 명세. 루트: `AGENTS.md`, `README.md`, `CHANGELOG.md`와 그 한국어 번역
@@ -54,8 +54,10 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
   `packages/python/tests`, `packages/ts/tests/cases.test.mjs`, `packages/ts/tests/cases.wasm.test.mjs`,
   `packages/php-ext/tests`, `packages/go/tests`다. 생성기가 받지 못하는 target은 원인과 함께 실패하는 target으로
   남는다. 어떤 target도 빠지거나 건너뛰지 않는다(binding BD-27).
-- Go 모듈에서 binding은 파일 `zz_generated_*.go`를 소유한다(binding GN-3). Go 모듈은 소스로 받아지므로 이 파일들은
-  추적되고, `make bindings`가 다시 쓴다. `packages/ts/wasm/generated`와 `packages/go/internal/ffi/generated`는 추적하지
+- Go 모듈에서 binding은 파일 `zz_generated_*.go`를 소유하고(binding GN-3), `make bindings`가 그 파일들을 쓴다. 이
+  파일들과 `packages/go/internal/ffi/lib/<platform>`의 정적 라이브러리는 추적하지 않는다. Go는 모듈을 tag의 소스로
+  받으므로 release가 둘을 Go tag의 commit에 더하고(binding GN-15g, CK-19), 추적한 사본은 pin이 바뀔 때마다 pin된
+  binding이 쓰는 것과 달라지기 때문이다. `packages/ts/wasm/generated`와 `packages/go/internal/ffi/generated`는 추적하지
   않는다. wasm-bindgen은 모듈과 그 glue를 앞의 디렉터리에 쓴다.
   변수 `PYTHON`(3.14 이상), `PHP`, `PHP_CONFIG`, `PHPUNIT`, `GO`, `GOFMT`, `WASM_BINDGEN`이 런타임을 가리킨다.
   `make test-go`는 `packages/go/go.mod`의 go 지시문과 다른 판의 Go를 실패시키고, toolchain을 받지 않도록

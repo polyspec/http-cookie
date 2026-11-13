@@ -18,8 +18,7 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
   `composer.json`, `go.mod`). They are not edited by hand; `make bindings-check` fails when they differ from what binding
   writes. `generated/` of each (`packages/go/internal/ffi/generated` and `packages/ts/wasm/generated` included) is
   written by `make bindings` and is not tracked. In the Go module binding owns the files `zz_generated_*.go` instead of
-  a directory, and they are tracked (binding GN-3), because `go get` takes a module from its tracked files; `make
-  bindings` writes them again. `tests/` of each holds the runner of the contract cases in that language (CK-14.5).
+  a directory (binding GN-3); `make bindings` writes them and they are not tracked either (see "Bindings"). `tests/` of each holds the runner of the contract cases in that language (CK-14.5).
 - `contracts/cookies.json`: the cases of the rules (CK-14).
 - `scripts/binding.mts`: runs binding (see "Bindings").
 - `docs/spec/`: the specification. Root: `AGENTS.md`, `README.md`, `CHANGELOG.md` and their Korean translations
@@ -55,8 +54,10 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
   PHPUnit and go test. The contract cases are `packages/python/tests`, `packages/ts/tests/cases.test.mjs`,
   `packages/ts/tests/cases.wasm.test.mjs`, `packages/php-ext/tests` and `packages/go/tests`. A target that the
   generator cannot take stays a failing target with its cause; no target is left out or skipped (binding BD-27).
-- In the Go module binding owns the files `zz_generated_*.go` (binding GN-3); they are tracked, because a Go module is
-  fetched as source, and `make bindings` writes them again. `packages/ts/wasm/generated` and
+- In the Go module binding owns the files `zz_generated_*.go` (binding GN-3), which `make bindings` writes. They are
+  not tracked, and neither is a static library of `packages/go/internal/ffi/lib/<platform>`: a release adds both in the
+  commit of its Go tag, because Go fetches a module as the source of a tag (binding GN-15g, CK-19), and a tracked copy
+  would differ from what the pinned binding writes after every change of the pin. `packages/ts/wasm/generated` and
   `packages/go/internal/ffi/generated` are not tracked; wasm-bindgen writes the module and its glue into the first.
   The variables `PYTHON` (3.14 or later), `PHP`, `PHP_CONFIG`, `PHPUNIT`, `GO`, `GOFMT` and `WASM_BINDGEN` name the
   runtimes. `make test-go` fails a Go of another release than the go directive of `packages/go/go.mod` and runs it with
