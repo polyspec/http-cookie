@@ -5,15 +5,17 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
 
 ## Layout
 
-- One Cargo workspace at the root (`Cargo.toml`, `Cargo.lock`) with the core and the three binding crates; the lints
-  are those of the root `Cargo.toml` and `clippy.toml`.
+- One Cargo workspace at the root (`Cargo.toml`, `Cargo.lock`) with the core and the binding crates of the five
+  targets; the lints are those of the root `Cargo.toml` and `clippy.toml`.
 - `packages/rust/`: the crate `polyspec-http-cookie`, which holds every rule (CK-1.4). It builds and tests without the
   generator. `packages/rust/interface.json`: the interface contract of the bindings (CK-1.5). The crate package holds
   it (`include` of `packages/rust/Cargo.toml`), so that a repository that depends on the crate reads it through Cargo.
-- `packages/python/`, `packages/ts/`, `packages/php-ext/`: the bindings for Python, Node and PHP. Each is a thin package
+- `packages/python/`, `packages/ts/`, `packages/ts/wasm/`, `packages/php-ext/`, `packages/go/`: the bindings for Python,
+  Node, the browser (WASM), PHP and Go, the five targets that every contract names (binding BD-27); the C ABI of Go is
+  the crate `packages/go/internal/ffi`. Each is a thin package
   that `binding scaffold` writes and that is tracked: `Cargo.toml`, `src/lib.rs`, which includes `generated/lib.rs`,
   the `build.rs` of the Node addon, and the manifest of the language (`pyproject.toml`, `package.json`,
-  `composer.json`). They are not edited by hand; `make binding-check` fails when they differ from what binding
+  `composer.json`, `go.mod`). They are not edited by hand; `make binding-check` fails when they differ from what binding
   writes. `generated/` of each is written by `make
   bindings` and is not tracked. `tests/` of each holds the runner of the contract cases in that language (CK-14.5).
 - `contracts/cookies.json`: the cases of the rules (CK-14).
@@ -40,10 +42,12 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
   `make test-python` (a wheel built by maturin and installed into `var/venv`), `make test-node` (the addon beside the
   generated entry, the package packed and installed into `var/node`) and `make test-php` (the extension built against
   `PHP_CONFIG` and loaded into `PHP`, the tests on `PHPUNIT`). Each runs the tests that binding generates and the
-  contract cases. The variables `PYTHON` (3.14 or later), `PHP` (8.4 or later), `PHP_CONFIG` and `PHPUNIT` name the
-  runtimes; `CARGOFLAGS` adds arguments to every cargo build. On macOS a PHP extension and a Node addon take the symbols
-  of their runtime when it loads them, so `.cargo/config.toml` tells the linker to leave them undefined, and the recipes
-  name the library that Cargo builds by the extension of the platform (`dylib` on macOS, `so` on Linux).
+  contract cases. No make target builds or tests the Go and WASM bindings yet; only the end-to-end check of binding
+  (`make e2e` of binding) runs them. The variables `PYTHON` (3.14 or later), `PHP` (8.4 or later), `PHP_CONFIG` and
+  `PHPUNIT` name the runtimes; `CARGOFLAGS` adds arguments to every cargo build. On macOS a PHP extension and a Node
+  addon take the symbols of their runtime when it loads them, so `.cargo/config.toml` tells the linker to leave them
+  undefined, and the recipes name the library that Cargo builds by the extension of the platform (`dylib` on macOS,
+  `so` on Linux).
 - The development tools are dependencies of the repository: TypeScript in `package.json`, pinned by
   `package-lock.json`, and PHPUnit in `require-dev` of `composer.json`, installed into `vendor/` (the default of
   `PHPUNIT`). `composer.lock` pins PHPUnit and its dependencies, and `composer install` installs them.

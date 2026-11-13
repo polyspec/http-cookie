@@ -8,7 +8,9 @@
   "targets": [
     "php",
     "python",
-    "node"
+    "node",
+    "go",
+    "wasm"
   ],
   "packages": {
     "php": {
@@ -23,12 +25,19 @@
       "package": "@polyspec/http-cookie",
       "entries": {
         ".": {
+          "conditions": {
+            "node": "napi",
+            "browser": "wasm"
+          },
           "formats": [
             "import",
             "require"
           ]
         }
       }
+    },
+    "go": {
+      "module": "github.com/polyspec/http-cookie/packages/go"
     }
   },
   "naming": {
@@ -40,32 +49,38 @@
       "value": {
         "php": "Polyspec\\HttpCookie\\HttpCookieValueError",
         "python": "HTTPCookieValueError",
-        "node": "HttpCookieValueError"
+        "node": "HttpCookieValueError",
+        "wasm": "HttpCookieValueError"
       },
       "type": {
         "php": "Polyspec\\HttpCookie\\HttpCookieTypeError",
         "python": "HTTPCookieTypeError",
-        "node": "HttpCookieTypeError"
+        "node": "HttpCookieTypeError",
+        "wasm": "HttpCookieTypeError"
       },
       "io": {
         "php": "Polyspec\\HttpCookie\\HttpCookieIoError",
         "python": "HTTPCookieIoError",
-        "node": "HttpCookieIoError"
+        "node": "HttpCookieIoError",
+        "wasm": "HttpCookieIoError"
       },
       "store": {
         "php": "Polyspec\\HttpCookie\\HttpCookieStoreError",
         "python": "HTTPCookieStoreError",
-        "node": "HttpCookieStoreError"
+        "node": "HttpCookieStoreError",
+        "wasm": "HttpCookieStoreError"
       },
       "busy": {
         "php": "Polyspec\\HttpCookie\\HttpCookieBusyError",
         "python": "HTTPCookieBusyError",
-        "node": "HttpCookieBusyError"
+        "node": "HttpCookieBusyError",
+        "wasm": "HttpCookieBusyError"
       },
       "internal": {
         "php": "Polyspec\\HttpCookie\\HttpCookieInternalError",
         "python": "HTTPCookieInternalError",
-        "node": "HttpCookieInternalError"
+        "node": "HttpCookieInternalError",
+        "wasm": "HttpCookieInternalError"
       }
     },
     "fixed": [
@@ -83,6 +98,10 @@
       },
       {
         "lang": "node",
+        "class": "TypeError"
+      },
+      {
+        "lang": "wasm",
         "class": "TypeError"
       }
     ],

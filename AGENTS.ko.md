@@ -1,20 +1,22 @@
 <!-- doc-id: agents -->
-<!-- source-sha256: 61be962be29db4d2c05f39dd2121b4b7088a5dfed9121793935f2e57449bf225 -->
+<!-- source-sha256: 366aaf5ceb52b295a2fbccf2c7bdd43c7ceb2ed4c91a42429d8970190917d063 -->
 # AGENTS.md
 
 http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 규칙은 [docs/spec/cookies.ko.md](docs/spec/cookies.ko.md)에 있다.
 
 ## 배치
 
-- 루트에 Cargo workspace 하나(`Cargo.toml`, `Cargo.lock`)가 있고, 코어와 세 바인딩 crate를 담는다. lint는
+- 루트에 Cargo workspace 하나(`Cargo.toml`, `Cargo.lock`)가 있고, 코어와 다섯 target의 바인딩 crate를 담는다. lint는
   루트 `Cargo.toml`과 `clippy.toml`의 것이다.
 - `packages/rust/`: 모든 규칙을 담는 crate `polyspec-http-cookie`(CK-1.4). 이 crate는 생성기 없이 빌드되고
   시험된다. `packages/rust/interface.json`: 바인딩의 인터페이스 계약(CK-1.5). crate 패키지가 이 파일을
   담으므로(`packages/rust/Cargo.toml`의 `include`), 이 crate에 의존하는 레포는 Cargo를 통해 이 파일을 읽는다.
-- `packages/python/`, `packages/ts/`, `packages/php-ext/`: Python, Node, PHP 바인딩. 각각은 `binding scaffold`가
+- `packages/python/`, `packages/ts/`, `packages/ts/wasm/`, `packages/php-ext/`, `packages/go/`: Python, Node,
+  브라우저(WASM), PHP, Go 바인딩이며, 모든 계약이 적는 다섯 target이다(binding BD-27). Go의 C ABI는 crate
+  `packages/go/internal/ffi`다. 각각은 `binding scaffold`가
   쓰는 얇은 패키지이고 추적된다: `Cargo.toml`, `generated/lib.rs`를 include하는 `src/lib.rs`,
   Node addon의 `build.rs`, 그 언어의 manifest(`pyproject.toml`, `package.json`,
-  `composer.json`). 이 파일들은 손으로 고치지 않는다. binding이 쓰는 것과 다르면
+  `composer.json`, `go.mod`). 이 파일들은 손으로 고치지 않는다. binding이 쓰는 것과 다르면
   `make binding-check`가 실패한다. 각 바인딩의 `generated/`는 `make bindings`가 쓰고
   추적되지 않는다. 각 바인딩의 `tests/`는 그 언어로 contract case를 돌리는 runner를 담는다(CK-14.5).
 - `contracts/cookies.json`: 규칙의 case(CK-14).
@@ -41,7 +43,8 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
   `make test-python`(maturin이 빌드해 `var/venv`에 설치한 wheel), `make test-node`(생성된 entry 옆의
   addon, pack해서 `var/node`에 설치한 패키지), `make test-php`(`PHP_CONFIG`에 맞춰 빌드해
   `PHP`에 로드한 확장, `PHPUNIT`으로 돌리는 시험)를 실행한다. 각각은 binding이 생성하는 시험과
-  contract case를 돌린다. 변수 `PYTHON`(3.14 이상), `PHP`(8.4 이상), `PHP_CONFIG`, `PHPUNIT`이
+  contract case를 돌린다. Go와 WASM 바인딩을 빌드하거나 시험하는 make target은 아직 없고, binding의
+  end-to-end 검사(binding의 `make e2e`)만 그것들을 돌린다. 변수 `PYTHON`(3.14 이상), `PHP`(8.4 이상), `PHP_CONFIG`, `PHPUNIT`이
   런타임을 가리키고, `CARGOFLAGS`는 모든 cargo build에 인자를 더한다. macOS에서 PHP 확장과 Node addon은 런타임이
   자신을 로드할 때 그 런타임의 기호를 받는다. 그래서 `.cargo/config.toml`이 링커에게 그 기호를 정의하지 않은 채 두게 하고,
   recipe는 Cargo가 빌드하는 라이브러리를 플랫폼의 확장자(macOS `dylib`, Linux `so`)로 가리킨다.

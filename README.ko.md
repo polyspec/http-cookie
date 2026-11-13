@@ -1,5 +1,5 @@
 <!-- doc-id: readme -->
-<!-- source-sha256: cd0ab49be826904996f25b8ea456c27789baa1ff36f775adc9db662b7c0d2e64 -->
+<!-- source-sha256: 5f4b7d8bff81d3f6c7a7466ddebd3e2984aa3e27563167518c7d6fd4bbb6a8fa -->
 # http-cookie
 
 [English](README.md)
@@ -28,11 +28,12 @@ let attributes = Attributes { path: "/".into(), max_age: Some(60), secure: true,
 assert_eq!(set_cookie("__Host-id", "v", &attributes)?, b"__Host-id=v; Max-Age=60; Path=/; Secure; HttpOnly; SameSite=Lax");
 ```
 
-## PHP, Python, Node
+## PHP, Python, Node, 브라우저, Go
 
 바인딩은 binding이 인터페이스 계약 [packages/rust/interface.json](packages/rust/interface.json)에서 생성한다(CK-1.5):
 Composer 패키지 `polyspec/http-cookie`(PHP 확장 `polyspec_http_cookie`, PHP 8.4 이상), PyPI 패키지
-`polyspec-http-cookie`(모듈 `polyspec.http_cookie`, Python 3.14 이상), npm 패키지 `@polyspec/http-cookie`. 언어마다
+`polyspec-http-cookie`(모듈 `polyspec.http_cookie`, Python 3.14 이상), npm 패키지 `@polyspec/http-cookie`(브라우저는 조건 `browser`와 subpath `./wasm`의 WASM entry를 받는다), Go 모듈
+`github.com/polyspec/http-cookie/packages/go`. 언어마다
 `parseCookie`/`parse_cookie`, 속성을 이름 있는 인자(PHP)·키워드 인자(Python)·options 객체(Node)로 받는
 `setCookie`/`set_cookie`, enum `SameSite`, `kind`와 `status`를 가진 오류 클래스 `HttpCookie<Category>Error`가 있다. 아직
 릴리스는 없다.
