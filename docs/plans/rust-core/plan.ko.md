@@ -1,5 +1,5 @@
 <!-- doc-id: plan-rust-core -->
-<!-- source-sha256: 9461cc042e7edea4606035de2d6445646a08f18e84f1a24f8edd338d1fe7cf76 -->
+<!-- source-sha256: 8748b14a3d992abf33757eaf457ec928bc29a5072fe791f3d9b9281eed953f81 -->
 # Rust 코어
 
 [English](plan.md)
@@ -14,6 +14,6 @@ release에 아직 필요한 것을 각 단계가 앞 단계를 필요로 하는 
 
 1. 문서와 추적 파일의 검사(T1.1, T1.2).
 2. binding의 branch 대신 release된 tag로 binding에 의존하는 것(T1.3). binding 0.0.2의 release를 기다린다.
-3. release 0.0.2의 플랫폼별 바인딩 패키지(T1.4). binding이 그 release recipe를 생성하므로 이 저장소는 자기 recipe를
+3. release 0.0.3의 플랫폼별 바인딩 패키지(T1.4, T1.7). binding이 그 release recipe를 생성하므로 이 저장소는 자기 recipe를
    쓰지 않고, workflow `assets.yml`이 각 플랫폼의 runner에서 그것을 빌드한다.
 4. 첫 release(T1.5). `main`에서 `ci.yml`의 모든 job이 통과하고, 코어와 Go module의 tag가 정해진다.

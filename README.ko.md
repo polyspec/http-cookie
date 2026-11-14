@@ -1,5 +1,5 @@
 <!-- doc-id: readme -->
-<!-- source-sha256: 28eafb038b321a175dcd4a41dd154b6fe0662436c9fdecd60d964f83cd1a45fa -->
+<!-- source-sha256: 68c69819f69a041df3ad9e9d2c1ac96690139d6ae84e766be62a9301813b699f -->
 # http-cookie
 
 [English](README.md)
@@ -35,7 +35,7 @@ Composer 패키지 `polyspec/http-cookie`(PHP 확장 `polyspec_http_cookie`, PHP
 `polyspec-http-cookie`(모듈 `polyspec.http_cookie`, Python 3.14 이상), npm 패키지 `@polyspec/http-cookie`(브라우저는 조건 `browser`와 subpath `./wasm`의 WASM entry를 받는다), Go 모듈
 `github.com/polyspec/http-cookie/packages/go`. 언어마다
 `parseCookie`/`parse_cookie`, 속성을 이름 있는 인자(PHP)·키워드 인자(Python)·options 객체(Node)로 받는
-`setCookie`/`set_cookie`, enum `SameSite`, `kind`와 `status`를 가진 오류 클래스 `HttpCookie<Category>Error`가 있다. 0.0.2부터
+`setCookie`/`set_cookie`, enum `SameSite`, `kind`와 `status`를 가진 오류 클래스 `HttpCookie<Category>Error`가 있다. 0.0.3부터
 각 tag `vX.Y.Z`의 GitHub Release가 `linux-x64-gnu`, `linux-arm64-gnu`, `darwin-arm64`용 바인딩 package를 가지고, Go
 module은 tag `packages/go/vX.Y.Z`를 가진다. 어느 package registry에도 올리지 않는다.
 
