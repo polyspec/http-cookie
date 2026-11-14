@@ -1,5 +1,5 @@
 <!-- doc-id: agents -->
-<!-- source-sha256: 86e4c3f70acf077dbb8c9e9af0840b1ccb0528f6a1aa4055d6ae3b808b543532 -->
+<!-- source-sha256: 3f577302cde2047b213fe736b49f5126624d5bf07807fb48fc09ae4ebb98c5e3 -->
 # AGENTS.md
 
 http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 규칙은 [docs/spec/cookies.ko.md](docs/spec/cookies.ko.md)에 있다.
@@ -22,7 +22,7 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
   `zz_generated_*.go` 파일을 소유한다(binding GN-3). `make bindings`가 이 파일들을 쓰고, 이 파일들도 추적되지
   않는다("바인딩" 절을 본다). 각 바인딩의 `tests/`는 그 언어로 contract case를 돌리는 runner를 담는다(CK-14.5).
 - `contracts/cookies.json`: 규칙의 case(CK-14).
-- `scripts/binding.mts`: binding을 실행한다("바인딩" 절을 본다). `tests/scripts/`: `make test-scripts`가 실행하는 추적
+- `tests/scripts/`: `make test-scripts`가 실행하는 추적
   파일의 시험.
 - `docs/spec/`: 명세. `docs/plans/rust-core/`: plan과 그 checklist이며, `make docs-check`가 `config/documents.json`과
   `config/checklist.json`으로 읽는다("변경" 절을 본다). 루트: `AGENTS.md`, `README.md`, `CHANGELOG.md`와 그 한국어 번역
@@ -36,18 +36,15 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
 - 이 저장소는 하나의 Cargo workspace다. 코어 `packages/rust`와 다섯 target(binding BD-27)의 바인딩 crate `packages/python`,
   `packages/ts`, `packages/ts/wasm`, `packages/php-ext`, `packages/go/internal/ffi`(와 `packages/go/go.mod`)로 이루어지며, 바인딩 crate는 `binding scaffold`가 쓰고 `make bindings-check`가 비교한다.
   바인딩 crate의 `generated/`는 추적하지 않는다. 루트의 `Cargo.lock`이 모든 의존성을 고정한다.
-- `polyspec-binding-core`는 binding이 릴리스될 때까지 코어와 바인딩 crate의 Git 의존성이다(binding 저장소의
-  `v1/rust-core` 브랜치). `Cargo.lock`이 그 커밋을 고정한다. 코어는 자기 오류에
-  `binding_core::Kinds`를 구현한다(CK-13.2, CK-13.3).
-- binding 자체는 같은 저장소의 TypeScript 도구이며, 아직 어떤 registry에도 없다. `scripts/binding.mts`는
-  `Cargo.lock`이 고정한 커밋으로 Cargo가 만든 checkout에서 binding을 가져와 `make install-binding`이 그것을
-  `var/binding/<commit>`에 clone하고 거기에 binding의 `package-lock.json`대로 의존성을 설치한다. 그래서 생성기와
-  `binding_core`가 한 판이 된다. 내려받는 것은 `make install-binding`뿐이다(`Cargo.lock`의 crate와 binding의 package).
-  `make bindings-check`와 `make bindings`는 그것을 offline으로 읽고 없으면 실패한다. 내려받는 검사는 network에 기대기
-  때문이다.
-  그 clone은 그 커밋의 binding Git checkout이다. binding check는 그 clone에서 자기 커밋을 읽어
-  `Cargo.lock`의 커밋과 비교하며(CK-20), 파일만 복사한 것은 이 비교에서 실패한다. 이 방식은 binding의 첫 릴리스까지만
-  유지된다.
+- `polyspec-binding-core`는 코어와 바인딩 crate가 binding 저장소의 tag `v0.0.2`, 곧 그 release에 두는 Git 의존성이다.
+  `Cargo.lock`이 그 tag의 커밋을 고정한다. 코어는 자기 오류에 `binding_core::Kinds`를 구현한다(CK-13.2, CK-13.3).
+- binding 자체는 같은 release의 npm package `@polyspec/binding`이다. `package.json`이 그것을 release asset의 URL로 적고
+  `package-lock.json`이 그 integrity로 고정한다. 그래서 생성기와 `binding_core`가 한 판이 된다(G-6). binding check는
+  `Cargo.lock`의 tag를 자기 것으로 받는다(CK-20). recipe는 `node_modules/@polyspec/binding/dist/cli.js`를
+  `var/tools/bin`의 node로 실행한다. bootstrap과 `make install-packages`가 그것을 설치하고, `make install-binding`이
+  `Cargo.lock`의 crate를 받는다(`cargo fetch --locked`). binding은 그 crate를 `cargo metadata --locked --offline`으로
+  읽는다. `make bindings-check`와 `make bindings`는 아무것도 내려받지 않고 그것이 없으면 실패한다. 내려받는 검사는
+  network에 기대기 때문이다. `tests/scripts/binding.test.mts`가 tag, asset, 그 integrity, 이 recipe를 요구한다.
 - `contracts/cookies.json`의 case는 binding의 case 규약(G-5)을 따른다. case의 key는 snake_case로 쓴 parameter
   이름(`lines`, `name`, `value`, `attributes`)이고, record는 그 field들의 객체다(attributes는
   `{"path", "max_age", "secure", "http_only", "same_site"}`다).
@@ -135,7 +132,7 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
   npm package와 그 플랫폼 package, Go 정적 라이브러리), kit 0.0.109의 release 도구는 npm package, Composer 소스 archive, 순수
   Python wheel만 묶기 때문이다.
 - release는 `main`에서 성공한 `ci.yml`의 push 실행이나 수동 실행의 commit이다. version-bump commit `chore(release):
-  Release X.Y.Z`는 코어의 version(`packages/rust/Cargo.toml`의 `version`)을 정하고, binding scaffold(`node scripts/binding.mts scaffold --contract
+  Release X.Y.Z`는 코어의 version(`packages/rust/Cargo.toml`의 `version`)을 정하고, binding scaffold(`node node_modules/@polyspec/binding/dist/cli.js scaffold --contract
   packages/rust/interface.json`)로 binding manifest를 다시 쓰며, `Cargo.lock`의 로컬 package version을 맞추고, 두
   changelog의 `## Unreleased`를 `## X.Y.Z`로 바꾸고 그 위에 빈 `## Unreleased`를 둔다. 그 push의 CI 실행이 성공하면
   `.github/workflows/release.yml`이 스스로 시작하고, `gh workflow run release.yml -f run=<id>`가 그것을 다시 시작한다.

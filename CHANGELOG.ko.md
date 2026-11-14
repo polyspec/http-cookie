@@ -1,7 +1,16 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: 3b3e6973960e213ce2280f31c5f22276c6c14ca0733d4f3815de7d01e0010e4a -->
+<!-- source-sha256: d36a325999e48e8920b390eebeb318ae167c9143b88b0c1a67076d57d2b736a4 -->
 
 ## Unreleased
+
+- binding은 release된 의존이다. 코어와 바인딩 crate의 `polyspec-binding-core`가 브랜치 `v1/rust-core` 대신 binding
+  저장소의 tag `v0.0.2`를 적고, 0.0.2의 binding scaffold가 바인딩 crate를 다시 썼으며, `Cargo.lock`이 그 tag의 커밋을
+  고정한다. 도구는 같은 release의 npm package `@polyspec/binding`이고, `package.json`이 그것을 release asset의 URL로 적고
+  `package-lock.json`이 그 integrity로 고정한다. recipe는 그 `dist/cli.js`를 실행하고, binding이 crate를 `cargo metadata
+  --locked --offline`으로 읽으므로 `make install-binding`이 `cargo fetch --locked`를 실행한다. binding을 `Cargo.lock`의
+  커밋으로 `var/binding`에 clone하던 `scripts/binding.mts`는 지웠다. 새 시험 `tests/scripts/binding.test.mts`는 브랜치
+  의존에서 네 시험 모두 실패했고 release로 통과한다. `make bindings`가 다섯 target을 생성하고, `make bindings-check`와
+  `binding check --release`는 finding을 내지 않는다.
 
 - `make test-scripts`가 추적 파일이 Git commit을 적지 않는지 검사한다(`tests/scripts/commits.test.mts`, `AGENTS.md`
   "Commit"). lock 파일, workflow, `config/toolchain.json`의 digest, contract case는 commit으로 고정하거나 다른 16진
