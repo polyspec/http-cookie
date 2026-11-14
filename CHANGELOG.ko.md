@@ -1,7 +1,12 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: 77ffbf527bb0f43635d23b082335aa2557b1aa13bf1cb765ef11642be890a201 -->
+<!-- source-sha256: 3b3e6973960e213ce2280f31c5f22276c6c14ca0733d4f3815de7d01e0010e4a -->
 
 ## Unreleased
+
+- `make test-scripts`가 추적 파일이 Git commit을 적지 않는지 검사한다(`tests/scripts/commits.test.mts`, `AGENTS.md`
+  "Commit"). lock 파일, workflow, `config/toolchain.json`의 digest, contract case는 commit으로 고정하거나 다른 16진
+  자료를 담으므로 이름으로 뺀다. 전에는 이 규칙에 검사가 없었다. 시험은 tree에서 통과하고 commit id를 적은 줄에서
+  실패한다.
 
 - 저장소는 다른 polyspec 저장소의 형태로 plan `docs/plans/rust-core/plan.md`와 그 checklist
   `docs/plans/rust-core/checklist.md`를 각각 한국어 쌍과 함께 가진다. checklist는 첫 release에 아직 필요한 것을 담는다.

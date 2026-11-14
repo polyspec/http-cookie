@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- `make test-scripts` checks that no tracked file names a Git commit (`tests/scripts/commits.test.mts`, `AGENTS.md`,
+  "Commits"); the lock files, the workflows, the digests of `config/toolchain.json` and the contract cases are left
+  out by name, because they pin by a commit or hold other hexadecimal data. Before, the rule had no check. The test
+  passes on the tree and fails on a line that names a commit id.
+
 - The repository has the plan `docs/plans/rust-core/plan.md` and its checklist `docs/plans/rust-core/checklist.md`, each
   with its Korean twin, in the form of the other polyspec repositories; the checklist holds what the first release
   still needs. `make docs-check` reads the documents of `config/documents.json` and the checklist with the rows of
