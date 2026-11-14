@@ -1,7 +1,9 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: d47e07d970acadf4897291e52a0f0b542683307bf8a9f8e68903d933a2527433 -->
+<!-- source-sha256: 0199bf5c1b4fb091da2f85bb2e0394f34aed282192b28007b7878302ee6b8c4b -->
 
 ## Unreleased
+
+## 0.0.2
 
 - release가 플랫폼별 바인딩 package를 GitHub Release의 asset으로 가진다. binding 0.0.3이 contract의 release recipe를
   쓴다(binding GN-19h). `make release-recipes`가 `binding release-recipes --root .`을 실행해 ignore된 파일
