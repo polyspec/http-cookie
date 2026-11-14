@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- The repository has the plan `docs/plans/rust-core/plan.md` and its checklist `docs/plans/rust-core/checklist.md`, each
+  with its Korean twin, in the form of the other polyspec repositories; the checklist holds what the first release
+  still needs. `make docs-check` reads the documents of `config/documents.json` and the checklist with the rows of
+  `config/checklist.json`, and `make check` and the entry `core` of CI run it; `make documents-stamp` writes the
+  `source-sha256` of a reviewed Korean twin. Before, no check read the documents, so a Korean twin could fall behind its
+  English file unseen.
+
 - The recipes run the node and the npm of `var/tools/bin` by their paths, and only the install targets download. `make
   install-binding` installs binding at the commit of `Cargo.lock` and fetches the crates of `Cargo.lock`, and CI runs it
   in every job; `scripts/binding.mts` reads them offline and fails while they are missing. `mise.toml` and `mise.lock`

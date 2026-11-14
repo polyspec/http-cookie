@@ -1,7 +1,13 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: 47e25f77248c359c20ecf88e34fc9b87766e0981792e72359bffe47cf6d04c87 -->
+<!-- source-sha256: 77ffbf527bb0f43635d23b082335aa2557b1aa13bf1cb765ef11642be890a201 -->
 
 ## Unreleased
+
+- 저장소는 다른 polyspec 저장소의 형태로 plan `docs/plans/rust-core/plan.md`와 그 checklist
+  `docs/plans/rust-core/checklist.md`를 각각 한국어 쌍과 함께 가진다. checklist는 첫 release에 아직 필요한 것을 담는다.
+  `make docs-check`가 `config/documents.json`의 문서와 `config/checklist.json`의 행을 가진 checklist를 읽고, `make
+  check`와 CI의 항목 `core`가 그것을 실행한다. `make documents-stamp`는 검토된 한국어 쌍의 `source-sha256`을 쓴다. 전에는
+  어떤 검사도 문서를 읽지 않아서 한국어 쌍이 영어 파일보다 뒤처져도 보이지 않았다.
 
 - recipe는 `var/tools/bin`의 node와 npm을 그 경로로 실행하고, 내려받는 것은 설치 target뿐이다. `make install-binding`은
   `Cargo.lock`의 커밋으로 binding을 설치하고 `Cargo.lock`의 crate를 받으며, CI는 모든 job에서 그것을 실행한다.

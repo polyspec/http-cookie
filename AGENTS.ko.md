@@ -1,5 +1,5 @@
 <!-- doc-id: agents -->
-<!-- source-sha256: d276972a5366315758846f801baf8c6cd6eca4e47c9bad98f7d3c91f159ad911 -->
+<!-- source-sha256: 735c3a44fa7d5c9070793ca98a649760d1574ee524aa57fd02f82966d275d451 -->
 # AGENTS.md
 
 http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 규칙은 [docs/spec/cookies.ko.md](docs/spec/cookies.ko.md)에 있다.
@@ -97,14 +97,18 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
 - 추적되는 모든 문서는 영어 파일 `X.md`와 그 한국어 번역 `X.ko.md`이고, 두 파일은 문장 단위로 같은 내용을
   말한다. 그래서 어느 언어의 독자도 같은 규칙을 읽는다. 두 파일은 같은 줄
   `<!-- doc-id: <name> -->`으로 시작하고, 한국어 파일의 둘째 줄은 영어 파일의 sha256을 적은
-  `<!-- source-sha256: <hash> -->`이다(`shasum -a 256`). 한 파일을 바꾸는 변경은 다른 파일도 바꾸고 hash를 다시 적는다.
-  이 쌍을 검사하는 make target은 없다.
+  `<!-- source-sha256: <hash> -->`이다. 한 파일을 바꾸는 변경은 다른 파일도 바꾸고, 번역을 검토한 뒤
+  `make documents-stamp PATHS=<twin>`이 hash를 다시 쓴다. 표시를 손으로 쓰지 않는다.
+- `make docs-check`는 `config/documents.json`이 고르는 각 문서를 그 link, anchor, fence, 각 한국어 쌍의 `doc-id`와
+  `source-sha256`과 함께 읽고, `config/checklist.json`이 행을 선언하는 checklist `docs/plans/rust-core/checklist.md`를
+  읽는다. 저장소의 plan은 `docs/plans/rust-core/plan.md`이다. 작업은 그 checklist의 행이고, 그 검증 명령이 commit된
+  tree에서 통과한 뒤에만 `[o]`로 표시된다. commit 전에 실행한다.
 
 ## Rust
 
 - toolchain은 `rust-toolchain.toml`이 고정하는 릴리스다. `make check`는 `-D warnings`를 준 clippy와
   코어의 시험, workspace 전체의 rustfmt(생성된 파일이 필요 없다), `binding check`(계약과
-  추적되는 바인딩 패키지)를 실행한다.
+  추적되는 바인딩 패키지), `make docs-check`, `make test-scripts`를 실행한다.
 - workspace의 lint(루트의 `Cargo.toml`)는 모든 경고, unsafe 코드, `unwrap`, `expect`, `as`
   변환, 써야 하는 값이나 타입을 밝히지 않은 값의 `let _`, 이유 없는 allow attribute를 거부한다.
   `clippy.toml`은 `Option::{unwrap_or, unwrap_or_default, unwrap_or_else, map_or, map_or_else}`와
@@ -114,7 +118,7 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
 ## CI와 release
 
 - `.github/workflows/ci.yml`은 `main`의 push와 수동 실행에서 돈다. matrix 항목마다 job 하나다. `core`는 `lint-rust`,
-  `fmt-check`, `test`, `bindings-check`, `release-coverage`를 실행하고, `bindings`는 `make test-bindings`의 대상을 실행한다.
+  `fmt-check`, `test`, `bindings-check`, `docs-check`, `test-scripts`, `release-coverage`를 실행하고, `bindings`는 `make test-bindings`의 대상을 실행한다.
   각 job은 그 대상을 `make ci-targets`로 실행한다. `make ci-targets`는 모든 대상을 끝까지 실행하고 보고서
   `var/ci/<name>/`을 쓴다. 마지막 job `ci-passed`는 다른 모든 job이 통과했을 때만 통과한다. job은 `ubuntu-26.04-arm`에서
   돌고, 모든 action을 commit으로 고정하며, `timeout-minutes`를 두지 않고, step의 모든 명령을 make target 하나로

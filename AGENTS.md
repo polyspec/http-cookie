@@ -100,14 +100,19 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
 - Every tracked document is an English file `X.md` and its Korean translation `X.ko.md`, which say the same sentence
   by sentence, so that a reader of either language reads the same rules. Both start with the same line
   `<!-- doc-id: <name> -->`, and the second line of the Korean file is `<!-- source-sha256: <hash> -->` with the sha256
-  of the English file (`shasum -a 256`). A change of one file changes the other and writes the hash again. No make
-  target checks the pairs.
+  of the English file. A change of one file changes the other, and `make documents-stamp PATHS=<twin>` writes the hash
+  again after the translation is reviewed; no marker is written by hand.
+- `make docs-check` reads each document that `config/documents.json` selects, with its links, anchors and fences and
+  the `doc-id` and `source-sha256` of each Korean twin, and the checklist `docs/plans/rust-core/checklist.md`, whose
+  rows `config/checklist.json` declares. The plan of the repository is `docs/plans/rust-core/plan.md`; a task is a row
+  of that checklist, marked `[o]` only after its verification command passed on the committed tree. Run it before a
+  commit.
 
 ## Rust
 
 - The toolchain is the release that `rust-toolchain.toml` pins. `make check` runs clippy with `-D warnings` and the
-  tests of the core, rustfmt on the whole workspace (which needs no generated file), and `binding check` (the
-  contract and the tracked binding packages).
+  tests of the core, rustfmt on the whole workspace (which needs no generated file), `binding check` (the
+  contract and the tracked binding packages), `make docs-check` and `make test-scripts`.
 - The lints of the workspace (`Cargo.toml` at the root) deny every warning, unsafe code, `unwrap`, `expect`, `as`
   conversions, `let _` of a value that must be used or of an untyped value, and an allow attribute without a reason.
   `clippy.toml` disallows `Option::{unwrap_or, unwrap_or_default, unwrap_or_else, map_or, map_or_else}` and
@@ -117,7 +122,7 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
 ## CI and release
 
 - `.github/workflows/ci.yml` runs on the push of `main` and on a manual run, one job per matrix entry: `core` runs
-  `lint-rust`, `fmt-check`, `test`, `bindings-check` and `release-coverage`, and `bindings` runs the targets of `make
+  `lint-rust`, `fmt-check`, `test`, `bindings-check`, `docs-check`, `test-scripts` and `release-coverage`, and `bindings` runs the targets of `make
   test-bindings`. Each job runs them with `make ci-targets`, which runs every target to its end and writes the report
   `var/ci/<name>/`, and the last job `ci-passed` passes only when every other job passed. The jobs run on
   `ubuntu-26.04-arm`, pin every action by its commit, set no `timeout-minutes` and run every command of a step as one
