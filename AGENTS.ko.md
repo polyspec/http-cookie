@@ -1,5 +1,5 @@
 <!-- doc-id: agents -->
-<!-- source-sha256: 735c3a44fa7d5c9070793ca98a649760d1574ee524aa57fd02f82966d275d451 -->
+<!-- source-sha256: 86e4c3f70acf077dbb8c9e9af0840b1ccb0528f6a1aa4055d6ae3b808b543532 -->
 # AGENTS.md
 
 http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 규칙은 [docs/spec/cookies.ko.md](docs/spec/cookies.ko.md)에 있다.
@@ -22,8 +22,10 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
   `zz_generated_*.go` 파일을 소유한다(binding GN-3). `make bindings`가 이 파일들을 쓰고, 이 파일들도 추적되지
   않는다("바인딩" 절을 본다). 각 바인딩의 `tests/`는 그 언어로 contract case를 돌리는 runner를 담는다(CK-14.5).
 - `contracts/cookies.json`: 규칙의 case(CK-14).
-- `scripts/binding.mts`: binding을 실행한다("바인딩" 절을 본다).
-- `docs/spec/`: 명세. 루트: `AGENTS.md`, `README.md`, `CHANGELOG.md`와 그 한국어 번역
+- `scripts/binding.mts`: binding을 실행한다("바인딩" 절을 본다). `tests/scripts/`: `make test-scripts`가 실행하는 추적
+  파일의 시험.
+- `docs/spec/`: 명세. `docs/plans/rust-core/`: plan과 그 checklist이며, `make docs-check`가 `config/documents.json`과
+  `config/checklist.json`으로 읽는다("변경" 절을 본다). 루트: `AGENTS.md`, `README.md`, `CHANGELOG.md`와 그 한국어 번역
   (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`, `.github/`("CI와 release" 절을 본다),
   `config/release.json`, 그리고 개발 도구의 `package.json`, `package-lock.json`, `composer.json`, `composer.lock`, 그리고 checkout의 도구의
   `mise.toml`, `mise.lock`, `config/toolchain.json`, `.php-version`, `.npmrc`, `.mise/locks/`("바인딩" 절을 본다).

@@ -20,8 +20,10 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
   written by `make bindings` and is not tracked. In the Go module binding owns the files `zz_generated_*.go` instead of
   a directory (binding GN-3); `make bindings` writes them and they are not tracked either (see "Bindings"). `tests/` of each holds the runner of the contract cases in that language (CK-14.5).
 - `contracts/cookies.json`: the cases of the rules (CK-14).
-- `scripts/binding.mts`: runs binding (see "Bindings").
-- `docs/spec/`: the specification. Root: `AGENTS.md`, `README.md`, `CHANGELOG.md` and their Korean translations
+- `scripts/binding.mts`: runs binding (see "Bindings"). `tests/scripts/`: the tests of the tracked files, which `make
+  test-scripts` runs.
+- `docs/spec/`: the specification. `docs/plans/rust-core/`: the plan and its checklist, which `make docs-check` reads
+  with `config/documents.json` and `config/checklist.json` (see "Changes"). Root: `AGENTS.md`, `README.md`, `CHANGELOG.md` and their Korean translations
   (`*.ko.md`), `Makefile`, `rust-toolchain.toml`, `clippy.toml`, `rustfmt.toml`, `.github/` (see "CI and release"),
   `config/release.json`, and `package.json`, `package-lock.json`, `composer.json` and `composer.lock` of the development
   tools, and `mise.toml`, `mise.lock`, `config/toolchain.json`, `.php-version`, `.npmrc` and `.mise/locks/` of the tools
