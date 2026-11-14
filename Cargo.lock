@@ -1090,7 +1090,7 @@ dependencies = [
 
 [[package]]
 name = "polyspec-http-cookie"
-version = "0.0.1"
+version = "0.0.0"
 dependencies = [
  "polyspec-binding-core",
  "proptest",
@@ -1099,7 +1099,7 @@ dependencies = [
 
 [[package]]
 name = "polyspec-http-cookie-go"
-version = "0.0.1"
+version = "0.0.0"
 dependencies = [
  "polyspec-binding-core",
  "polyspec-http-cookie",
@@ -1107,7 +1107,7 @@ dependencies = [
 
 [[package]]
 name = "polyspec-http-cookie-node"
-version = "0.0.1"
+version = "0.0.0"
 dependencies = [
  "napi",
  "napi-build",
@@ -1118,7 +1118,7 @@ dependencies = [
 
 [[package]]
 name = "polyspec-http-cookie-php-ext"
-version = "0.0.1"
+version = "0.0.0"
 dependencies = [
  "ext-php-rs",
  "polyspec-binding-core",
@@ -1127,7 +1127,7 @@ dependencies = [
 
 [[package]]
 name = "polyspec-http-cookie-python"
-version = "0.0.1"
+version = "0.0.0"
 dependencies = [
  "polyspec-binding-core",
  "polyspec-http-cookie",
@@ -1136,7 +1136,7 @@ dependencies = [
 
 [[package]]
 name = "polyspec-http-cookie-wasm"
-version = "0.0.1"
+version = "0.0.0"
 dependencies = [
  "js-sys",
  "polyspec-binding-core",
