@@ -1,5 +1,5 @@
 <!-- doc-id: agents -->
-<!-- source-sha256: 64cd407d73ed87a558a2ea579e3c86d28e85b3e22dd5069d3d54413c67146de5 -->
+<!-- source-sha256: 8a2720ef452c844cce2611682467a8e72f54fe063b8d0febc8d7177e60675f4a -->
 # AGENTS.md
 
 http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 규칙은 [docs/spec/cookies.ko.md](docs/spec/cookies.ko.md)에 있다.
@@ -139,7 +139,8 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
   manifest의 version이기도 하며, binding scaffold가 코어의 version으로 그 manifest를 쓴다. kit은 PHP 확장
   `packages/php-ext`의 Composer package를 묶는다. 그 `composer.json`은 PIE에게 pre-packaged binary를 내려받게 한다.
   workflow `assets.yml`은 binding의 recipe로 각 플랫폼의 asset을 빌드한다. Go module의 정적 라이브러리, abi3 wheel,
-  PHP 8.4와 8.5용 PHP 확장, npm 플랫폼 package, 그리고 WASM module을 가진 npm package 자체다. Go module `packages/go`는
+  `config/toolchain.json`의 `phpExtension.minors`의 각 PHP minor(8.4와 8.5, `make test-scripts`가 `assets.yml`의
+  step을 그 목록과 비교한다)용 PHP 확장, npm 플랫폼 package, 그리고 WASM module을 가진 npm package 자체다. Go module `packages/go`는
   `goModules`에 없다. `make release-go-module`이 tag의 tree에 생성 파일과 정적 라이브러리를 더한 commit을 만들고, 그것을
   consumer로 증명하고, 그 commit에 `packages/go/vX.Y.Z`를 tag한다(binding GN-19f). 둘 다 없는 tag의 Go module은
   consumer가 빌드할 수 없기 때문이다.
