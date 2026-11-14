@@ -35,7 +35,9 @@ the PyPI package `polyspec-http-cookie` (module `polyspec.http_cookie`, Python 3
 `@polyspec/http-cookie`, whose WASM entry the browser takes (the condition `browser` and the subpath `./wasm`), and the
 Go module `github.com/polyspec/http-cookie/packages/go`. Each language has `parseCookie`/`parse_cookie`, `setCookie`/`set_cookie` with the attributes
 as named arguments (PHP), keyword arguments (Python) or an options object (Node), the enum `SameSite` and the error
-classes `HttpCookie<Category>Error` with `kind` and `status`. No release is published yet.
+classes `HttpCookie<Category>Error` with `kind` and `status`. From 0.0.2, the GitHub Release of each tag `vX.Y.Z` holds
+the packages of the bindings for `linux-x64-gnu`, `linux-arm64-gnu` and `darwin-arm64`, and the Go module has the tag
+`packages/go/vX.Y.Z`; no package registry holds them.
 
 ## Checks
 

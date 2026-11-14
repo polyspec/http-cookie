@@ -1,7 +1,27 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: 2a018bb8f57b04ddb9b3a15c36488f93b96b3405f3e07e6f7c74cbc009797074 -->
+<!-- source-sha256: d47e07d970acadf4897291e52a0f0b542683307bf8a9f8e68903d933a2527433 -->
 
 ## Unreleased
+
+- release가 플랫폼별 바인딩 package를 GitHub Release의 asset으로 가진다. binding 0.0.3이 contract의 release recipe를
+  쓴다(binding GN-19h). `make release-recipes`가 `binding release-recipes --root .`을 실행해 ignore된 파일
+  `packages/release.mk`를 쓰고, Makefile이 `BINDING_RUN`, `NODE`, `NPM`, `UV`, `BINDING_DEP`를 정의한 뒤 그것을
+  include하므로 이 저장소는 자기 recipe를 두지 않는다. 새 workflow `.github/workflows/assets.yml`이 `ubuntu-26.04`,
+  `ubuntu-26.04-arm`, `macos-15`에서 각 플랫폼의 Go module 정적 라이브러리, abi3 wheel, PHP 8.4와 8.5용 PHP 확장, npm
+  플랫폼 package를 빌드하고, `ubuntu-26.04-arm`에서 WASM module을 가진 npm package를 빌드한다(binding GN-19a, GN-19i).
+  `ci.yml`이 매 실행에서 그것을 호출하고, `release.yml`이 tag에 대해 그것을 호출한 뒤 PHP 확장의 Composer package로
+  draft release를 만들고, `make release-go-module`로 Go module을 옮기고, `make release-platform-assets`로 asset을 올리고,
+  release를 공개한다. `config/release.json`은 `packages/php-ext`의 Composer package를 release하고 `goModules`에 더는
+  `packages/go`를 적지 않는다. kit이 release commit에 둔 tag `packages/go/v0.0.1`은 생성 파일도 정적 라이브러리도 가지지
+  않아 Go module의 consumer가 그것을 빌드할 수 없었고, 이제 `make release-go-module`이 그것을 더한 commit에 tag한다(binding
+  GN-19f). binding 의존은 release 0.0.3이다(`package.json`, `package-lock.json`, 모든 Cargo manifest의
+  `polyspec-binding-core`의 tag `v0.0.3`, `Cargo.lock`). `@napi-rs/cli` 3.10.12가 devDependency이고,
+  `config/toolchain.json`이 LLVM 21을 고정하며, `rust-toolchain.toml`이 `llvm-tools`와 Linux arch의 musl target을 적고,
+  `mise.toml`과 `mise.lock`이 uv 0.12.24를 적는다. release의 각 job이 tag를 checkout하므로 target `release-checkout`을
+  지운다. 새 시험 `tests/scripts/workflows.test.mts`가 runner, 고정, run step, release step의 순서를 검사한다. Red:
+  `binding check --release`가 Makefile에 `CK-94 includes no packages/release.mk`를 보고했고, `make test-scripts`가
+  `workflows.test.mts`의 시험 3개에서 실패했다. Green: `binding check --release`는 finding이 없고, `make test-scripts`는
+  시험 9개를 통과하며, `make docs-check`와 `make release-coverage`가 통과한다.
 
 ## 0.0.1
 
