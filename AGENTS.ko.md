@@ -1,5 +1,5 @@
 <!-- doc-id: agents -->
-<!-- source-sha256: ad55e202828b004d7bcdf727f5e314876354e594e4a65529b6936fdac9dc4668 -->
+<!-- source-sha256: 64cd407d73ed87a558a2ea579e3c86d28e85b3e22dd5069d3d54413c67146de5 -->
 # AGENTS.md
 
 http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 규칙은 [docs/spec/cookies.ko.md](docs/spec/cookies.ko.md)에 있다.
@@ -36,7 +36,7 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
 - 이 저장소는 하나의 Cargo workspace다. 코어 `packages/rust`와 다섯 target(binding BD-27)의 바인딩 crate `packages/python`,
   `packages/ts`, `packages/ts/wasm`, `packages/php-ext`, `packages/go/internal/ffi`(와 `packages/go/go.mod`)로 이루어지며, 바인딩 crate는 `binding scaffold`가 쓰고 `make bindings-check`가 비교한다.
   바인딩 crate의 `generated/`는 추적하지 않는다. 루트의 `Cargo.lock`이 모든 의존성을 고정한다.
-- `polyspec-binding-core`는 코어와 바인딩 crate가 binding 저장소의 tag `v0.0.4`, 곧 그 release에 두는 Git 의존성이다.
+- `polyspec-binding-core`는 코어와 바인딩 crate가 binding 저장소의 tag `v0.0.5`, 곧 그 release에 두는 Git 의존성이다.
   `Cargo.lock`이 그 tag의 커밋을 고정한다. 코어는 자기 오류에 `binding_core::Kinds`를 구현한다(CK-13.2, CK-13.3).
 - binding 자체는 같은 release의 npm package `@polyspec/binding`이다. `package.json`이 그것을 release asset의 URL로 적고
   `package-lock.json`이 그 integrity로 고정한다. 그래서 생성기와 `binding_core`가 한 판이 된다(G-6). binding check는

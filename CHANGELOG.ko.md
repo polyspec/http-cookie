@@ -1,7 +1,16 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: d9a3e86498af6f790228cbee0af07cd53d1b08e842651c0efda5eea51faa7786 -->
+<!-- source-sha256: 9f8a17da9ed380084933d99d85e98d57637cda89fde0aadc590528070ed222ac -->
 
 ## Unreleased
+
+- binding 의존은 0.0.4 대신 release 0.0.5다. `package.json`이 그 release asset을 적고, `package-lock.json`이 그 integrity를
+  고정하며, 모든 Cargo manifest의 `polyspec-binding-core`가 tag `v0.0.5`를 적고, 0.0.5의 binding scaffold가 바인딩
+  crate를 다시 썼고, `Cargo.lock`이 그 tag의 commit을 고정한다. binding 0.0.4의 recipe `release-wheel`은 Linux runner의
+  wheel을 tag `linux_<arch>`로 빌드했고 `release-platform-assets`가 그것을 거부했다. 그래서 release 0.0.2는
+  `var/release/assets/wheel/<name>-0.0.2-cp314-abi3-linux_aarch64.whl is no wheel of a platform of the release`로 멈췄고
+  Composer package만 가진 draft로 남는다. binding 0.0.5는 그 wheel을 policy `manylinux_2_34`로 빌드한다(binding
+  B2.267). 검증: `binding check --release`는 finding이 없고, `make bindings-check`, `make docs-check`, `make
+  test-scripts`, `make release-coverage`가 통과한다.
 
 ## 0.0.2
 
