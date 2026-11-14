@@ -1,7 +1,18 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: d6e85bebf4399af3eb1a61589765e5f7a32c9b24c1805d78cbaabf02d1d28759 -->
+<!-- source-sha256: 47e25f77248c359c20ecf88e34fc9b87766e0981792e72359bffe47cf6d04c87 -->
 
 ## Unreleased
+
+- recipe는 `var/tools/bin`의 node와 npm을 그 경로로 실행하고, 내려받는 것은 설치 target뿐이다. `make install-binding`은
+  `Cargo.lock`의 커밋으로 binding을 설치하고 `Cargo.lock`의 crate를 받으며, CI는 모든 job에서 그것을 실행한다.
+  `scripts/binding.mts`는 그것을 offline으로 읽고 없으면 실패한다. `mise.toml`과 `mise.lock`은 maturin 1.16.0을
+  binding의 digest로 고정하고, `make test-python`은 pip이 PyPI에서 설치한 maturin 대신 그것을 실행하며, wheel은 index
+  없이 설치된다. `make check-declarations`는 TypeScript를 `make install-packages`에서 받고 더 이상 `npm ci`를 실행하지
+  않으며, `make node-package`는 tarball을 offline으로 설치한다. 이전에는 `scripts/binding.mts`와 recipe 세 개가 검사
+  중에 내려받았고, `bindings-check`, `npm pack`, `node --test`는 기계의 `PATH`가 가리키는 node와 npm을 실행했다. 새
+  시험 `tests/scripts/recipes.test.mts`는 바인딩 recipe와 `make install-binding`의 dry run을 읽는다. `make check`와 CI
+  항목 `core`의 target인 `make test-scripts`가 그것을 실행하며, 변경 전에는 0 passed, 2 failed였고 변경 후에는 2
+  passed, 0 failed다.
 
 - workspace의 lint는 `unsafe_code`를 deny하고 더 이상 forbid하지 않는다. binding scaffold가 쓰는 바인딩 crate는
   workspace의 lint를 받고(binding GN-4), 생성된 코드는 unsafe block마다 이유와 함께 `unsafe_code`를 allow하는데,
