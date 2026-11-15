@@ -1,6 +1,6 @@
 {
   "name": "@polyspec/http-cookie",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "The http-cookie library of polyspec for Node and the browser",
   "license": "MIT",
   "type": "module",

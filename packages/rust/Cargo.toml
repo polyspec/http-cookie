@@ -1,6 +1,6 @@
 [package]
 name = "polyspec-http-cookie"
-version = "0.0.5"
+version = "0.0.6"
 edition = "2021"
 rust-version = "1.99.0"
 license = "MIT"
@@ -16,7 +16,7 @@ name = "polyspec_http_cookie"
 path = "src/lib.rs"
 
 [dependencies]
-polyspec-binding-core = { git = "https://github.com/polyspec/binding.git", tag = "v0.0.9" }
+polyspec-binding-core = { git = "https://github.com/polyspec/binding.git", tag = "v0.0.10" }
 
 [dev-dependencies]
 proptest = "1.12.0"
