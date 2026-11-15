@@ -1,5 +1,5 @@
 <!-- doc-id: agents -->
-<!-- source-sha256: 8a2720ef452c844cce2611682467a8e72f54fe063b8d0febc8d7177e60675f4a -->
+<!-- source-sha256: dddd99492eec7b2739a9b27854c1561c6a8368d663b258c2ddbaf0a3bc4ea4ca -->
 # AGENTS.md
 
 http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 규칙은 [docs/spec/cookies.ko.md](docs/spec/cookies.ko.md)에 있다.
@@ -117,6 +117,14 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
 
 ## CI와 release
 
+- T1.8-2의 계획: `assets.yml`은 PHP 이외의 build를 platform마다 한 번씩 `platform`에 두고 `php`에 platform과
+  `phpExtension.minors`의 모든 조합을 둔다. 각 PHP 항목은 `matrix.php`의 setup 하나,
+  `make release-php-ext PHP=php EXPECTED_PHP_MINOR=${{ matrix.php }}` 하나, 서로 다른 artifact
+  `assets-php-${{ matrix.platform }}-${{ matrix.php }}`를 가진다. 두 job은 각각 자기 platform의 runner를 쓴다.
+  release는 `assets-*` artifact를 병합한다. 이 소유 관계는 한 minor가 다른 minor의 결과를 대체하지 못하게 하고
+  local run이 실제 runtime 하나를 선택하게 한다. workflow test는 선언된 구조를 증명한다. native 검증은 expected-minor
+  검사(B2.275)를 가진 binding recipe의 공개, 재생성, 실제 실행을 기다린다. 건너뛴 setup action은 runtime 선택을
+  증명하지 않는다.
 - `.github/workflows/ci.yml`은 `main`의 push와 수동 실행에서 돈다. matrix 항목마다 job 하나다. `core`는 `lint-rust`,
   `fmt-check`, `test`, `bindings-check`, `docs-check`, `test-scripts`, `release-coverage`를 실행하고, `bindings`는 `make test-bindings`의 대상을 실행한다.
   각 job은 그 대상을 `make ci-targets`로 실행한다. `make ci-targets`는 모든 대상을 끝까지 실행하고 보고서
