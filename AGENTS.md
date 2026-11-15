@@ -36,7 +36,7 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
   (binding BD-27) `packages/python`, `packages/ts`, `packages/ts/wasm`, `packages/php-ext` and
   `packages/go/internal/ffi` (with `packages/go/go.mod`), which `binding scaffold` writes and `make bindings-check`
   compares; their `generated/` is not tracked. `Cargo.lock` at the root pins every dependency.
-- `polyspec-binding-core` is a Git dependency of the core and of the binding crates on the tag `v0.0.5` of the binding
+- `polyspec-binding-core` is a Git dependency of the core and of the binding crates on the tag `v0.0.8` of the binding
   repository, its release; `Cargo.lock` pins the commit of that tag. The core implements `binding_core::Kinds` for its
   error (CK-13.2, CK-13.3).
 - binding itself is the npm package `@polyspec/binding` of the same release, which `package.json` names by the URL of
@@ -166,7 +166,7 @@ Rules for every change of http-cookie. The rules of the library are in [docs/spe
   `BINDING_RUN`, `NODE`, `NPM`, `UV` and `BINDING_DEP`. The file is generated and not tracked, so it cannot drift from the
   pinned binding, and the repository writes no release recipe of its own: `binding check` reports a Makefile without the
   include or with a recipe of its own for a target of the file (CK-94). The recipes need the napi CLI `@napi-rs/cli` of
-  `package.json`, the major release of LLVM of `config/toolchain.json` (`make install-llvm` installs it), the component
+  `package.json`, the major release of LLVM of `config/toolchain.json` (the job provisions it: the ubuntu-26.04 images hold it, and on macOS install-llvm-action installs it, binding GN-19i), the component
   `llvm-tools` and the musl targets of `rust-toolchain.toml`, and the uv of `mise.toml`.
 - `config/release.json` classifies every package file, which `make release-coverage` checks. A tag `vX.Y.Z` releases the
   core crate `packages/rust` as a Git tag, which a Cargo dependency names with `tag = "vX.Y.Z"`, and it is the version

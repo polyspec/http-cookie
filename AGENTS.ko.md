@@ -36,7 +36,7 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
 - 이 저장소는 하나의 Cargo workspace다. 코어 `packages/rust`와 다섯 target(binding BD-27)의 바인딩 crate `packages/python`,
   `packages/ts`, `packages/ts/wasm`, `packages/php-ext`, `packages/go/internal/ffi`(와 `packages/go/go.mod`)로 이루어지며, 바인딩 crate는 `binding scaffold`가 쓰고 `make bindings-check`가 비교한다.
   바인딩 crate의 `generated/`는 추적하지 않는다. 루트의 `Cargo.lock`이 모든 의존성을 고정한다.
-- `polyspec-binding-core`는 코어와 바인딩 crate가 binding 저장소의 tag `v0.0.5`, 곧 그 release에 두는 Git 의존성이다.
+- `polyspec-binding-core`는 코어와 바인딩 crate가 binding 저장소의 tag `v0.0.8`, 곧 그 release에 두는 Git 의존성이다.
   `Cargo.lock`이 그 tag의 커밋을 고정한다. 코어는 자기 오류에 `binding_core::Kinds`를 구현한다(CK-13.2, CK-13.3).
 - binding 자체는 같은 release의 npm package `@polyspec/binding`이다. `package.json`이 그것을 release asset의 URL로 적고
   `package-lock.json`이 그 integrity로 고정한다. 그래서 생성기와 `binding_core`가 한 판이 된다(G-6). binding check는
@@ -156,8 +156,8 @@ http-cookie의 모든 변경에 적용하는 규칙이다. 라이브러리의 �
   실행해 `packages/release.mk`를 쓰고, Makefile은 `BINDING_RUN`, `NODE`, `NPM`, `UV`, `BINDING_DEP`를 정의한 뒤 그 파일을
   include한다. 그 파일은 생성되고 추적되지 않으므로 고정된 binding과 어긋날 수 없고, 이 저장소는 자기 release recipe를
   쓰지 않는다. `binding check`는 include가 없거나 그 파일의 target에 자기 recipe를 가진 Makefile을 보고한다(CK-94).
-  recipe에는 `package.json`의 napi CLI `@napi-rs/cli`, `config/toolchain.json`의 LLVM major release(`make install-llvm`이
-  설치한다), `rust-toolchain.toml`의 component `llvm-tools`와 musl target, `mise.toml`의 uv가 필요하다.
+  recipe에는 `package.json`의 napi CLI `@napi-rs/cli`, `config/toolchain.json`의 LLVM major release(job이 마련한다. ubuntu-26.04 image가 그것을 두고,
+  macOS에서는 install-llvm-action이 설치한다, binding GN-19i), `rust-toolchain.toml`의 component `llvm-tools`와 musl target, `mise.toml`의 uv가 필요하다.
 - `config/release.json`은 모든 package 파일을 분류하고, `make release-coverage`가 그것을 검사한다. tag `vX.Y.Z`는 코어
   crate `packages/rust`를 Git tag로 release한다. Cargo 의존은 그것을 `tag = "vX.Y.Z"`로 가리킨다. 그 tag는 binding
   manifest의 version이기도 하며, binding scaffold가 코어의 version으로 그 manifest를 쓴다. kit은 PHP 확장
