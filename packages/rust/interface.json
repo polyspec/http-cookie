@@ -358,12 +358,16 @@
     {
       "member": "parse_cookie",
       "file": "contracts/cookies.json",
-      "group": "parse"
+      "group": "parse",
+      "result": "cookies",
+      "reads": ["rules"]
     },
     {
       "member": "set_cookie",
       "file": "contracts/cookies.json",
-      "group": "set_cookie"
+      "group": "set_cookie",
+      "result": "header",
+      "reads": ["rules"]
     }
   ]
 }

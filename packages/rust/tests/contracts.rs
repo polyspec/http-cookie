@@ -178,3 +178,67 @@ fn set_cookie_cases() {
     assert!(failures.is_empty(), "{} failures:\n{}", failures.len(), failures.join("\n"));
     assert_eq!(cases.len(), 57, "the number of set_cookie cases");
 }
+
+const SPEC: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../docs/spec/cookies.md"));
+
+/// The ids that a spec defines: each `**CK-n**` that starts an item and each anchor `<a id="CK-n.m">`.
+fn defined_ids(spec: &str) -> std::collections::BTreeSet<String> {
+    let mut ids = std::collections::BTreeSet::new();
+    for line in spec.lines() {
+        if let Some((id, _)) = line.trim_start().strip_prefix("- **").and_then(|rest| rest.split_once("**")) {
+            ids.insert(id.to_owned());
+        }
+        for piece in line.split("<a id=\"").skip(1) {
+            if let Some((id, _)) = piece.split_once('"') {
+                ids.insert(id.to_owned());
+            }
+        }
+    }
+    ids
+}
+
+/// The failures of the rules of the cases of a contract: a case with no rule, a rule that is no text, and a rule that the
+/// spec does not define (CK-14.1).
+fn rule_failures(contract: &Value, spec: &str) -> Vec<String> {
+    let defined = defined_ids(spec);
+    let mut failures = Vec::new();
+    for name in ["parse", "set_cookie"] {
+        for case in group(contract, name) {
+            let id = text(&case, "id");
+            match case.get("rules") {
+                Some(Value::Array(rules)) if !rules.is_empty() => {
+                    for rule in rules {
+                        match rule {
+                            Value::String(rule) if defined.contains(rule) => {}
+                            Value::String(rule) => failures.push(format!("{name}/{id}: {rule} is not in the spec")),
+                            _ => failures.push(format!("{name}/{id}: a rule is no text")),
+                        }
+                    }
+                }
+                _ => failures.push(format!("{name}/{id}: no rule")),
+            }
+        }
+    }
+    failures
+}
+
+#[test]
+fn every_rule_of_a_case_is_in_the_spec() {
+    let failures = rule_failures(&contract(), SPEC);
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+#[test]
+fn a_rule_that_the_spec_does_not_define_fails() {
+    let fixture: Value = match serde_json::from_str(
+        r#"{"parse": [{"id": "known", "rules": ["CK-3.1"]}, {"id": "unknown", "rules": ["CK-999.1"]}, {"id": "none", "rules": []}],
+            "set_cookie": [{"id": "missing"}]}"#,
+    ) {
+        Ok(value) => value,
+        Err(error) => panic!("the fixture is not JSON: {error}"),
+    };
+    assert_eq!(
+        rule_failures(&fixture, SPEC),
+        ["parse/unknown: CK-999.1 is not in the spec", "parse/none: no rule", "set_cookie/missing: no rule"]
+    );
+}
