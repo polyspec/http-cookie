@@ -1,7 +1,13 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: 8b17b4178498961f15be56df8ef3e13742e263f8568b551825593b8a39765da2 -->
+<!-- source-sha256: 887c65daf752afe9fbddfeacc4342aaf91c0caea1b3c415b2caf26478fb3911a -->
 
 ## Unreleased
+
+## 0.0.8
+
+- Go 시험(T1.13, T1.14): `make test-go`는 `go test`에 Go crate의 각 feature의 build tag `polyspec_http_cookie_<feature>`를
+  준다. binding 0.0.17은 그 tag 아래에 생성 Go 시험을 쓴다. 0.0.7의 tag로는 `go test`가 panic 시험도 codec 시험도 빌드하지
+  않고 그것 없이 통과했다.
 
 ## 0.0.7
 
