@@ -1,11 +1,13 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: c34b798f100e30b4a8ba3f30282406aca7e13b1a6d5d3964478b0832ec172a36 -->
+<!-- source-sha256: 9ad3a3594fa85f5621e6b8f3c79707bf1df01660e21b28fafc150027d0e361f0 -->
 
 ## Unreleased
 
 - recipe는 각 binding crate의 test feature를 그 manifest에서 읽고(T1.15), `go test`의 build tag도 같은 목록에서 만든다. `make lint-bindings`는 그 합집합으로 workspace를 lint하므로 Go crate의 feature `codec-test`의 코드도 lint된다.
 - `assets.yml`의 job은 binding의 검사 앞에서 go를 설치하고, release하지 않을 때 `bindings-check`를 돈다(T1.16). 그래서 release가 도는 것을 CI가
   release의 각 runner에서 돈다.
+- kit을 release 0.0.120에 고정하고, `make release-candidate-assets`는 tag 없이 커밋된 HEAD에서 release의 archive를
+  만든다. CI의 job check가 그것을 돈다(T1.17).
 
 ## 0.0.8
 
