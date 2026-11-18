@@ -16,7 +16,7 @@ name = "polyspec_http_cookie"
 path = "src/lib.rs"
 
 [dependencies]
-polyspec-binding-core = { git = "https://github.com/polyspec/binding.git", tag = "v0.0.21" }
+polyspec-binding-core = { git = "https://github.com/polyspec/binding.git", tag = "v0.0.22" }
 
 [dev-dependencies]
 proptest = "1.12.0"
