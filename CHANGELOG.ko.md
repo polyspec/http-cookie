@@ -1,5 +1,5 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: 10f0f1f7453edc81d7e6083951bed3223e47dfe5f4276964a17488b215e443bb -->
+<!-- source-sha256: a8adfbc4fbb124b5228a3b0adfcd3e46c07e86df018ad211cf3c29ae6940c90a -->
 
 ## Unreleased
 
@@ -10,6 +10,7 @@
 - release의 Python 소스는 wheel의 네이티브 모듈을 받고, 소스 import가 그 모듈이 그 소스 아래에 있는지 확인한다(T1.23).
 - 소스 import의 PYTHONPATH 등록(T1.24)과 make pin, pin-check 등록(T1.25)을 적는다. PYTHONPATH를 쓰는 레시피는 이 release에서 바꾸지 않았다.
 - Go 모듈의 release 리허설은 release 레시피를 먼저 돌려, 새 checkout에서도 리허설이 시작할 때 packages/release.mk가 있다(T1.27).
+- ci.yml의 job check는 전체 history를 받는다(fetch-depth: 0). 그래서 Go 모듈의 리허설이 HEAD의 부모 commit을 찾는다(T1.28).
 
 ## 0.0.9
 
