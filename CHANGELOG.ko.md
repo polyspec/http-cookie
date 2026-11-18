@@ -1,5 +1,5 @@
 <!-- doc-id: changelog -->
-<!-- source-sha256: 9ad3a3594fa85f5621e6b8f3c79707bf1df01660e21b28fafc150027d0e361f0 -->
+<!-- source-sha256: e6fc19fc2b1a708804a37e49dd384635ce7a1bbd2dceaab79e6b2f5c47f559df -->
 
 ## Unreleased
 
@@ -7,6 +7,7 @@
 - Go 모듈의 release 리허설은 CHANGELOG.md에서 버전을 읽고, release 레시피 뒤에 돈다(T1.22).
 - release의 Python 소스는 wheel의 네이티브 모듈을 받고, 소스 import가 그 모듈이 그 소스 아래에 있는지 확인한다(T1.23).
 - 소스 import의 PYTHONPATH 등록(T1.24)과 make pin, pin-check 등록(T1.25)을 적는다. PYTHONPATH를 쓰는 레시피는 이 release에서 바꾸지 않았다.
+- Go 모듈의 release 리허설은 release 레시피를 먼저 돌려, 새 checkout에서도 리허설이 시작할 때 packages/release.mk가 있다(T1.27).
 
 ## 0.0.9
 
